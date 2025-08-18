@@ -1,0 +1,380 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <title><%= title %></title>
+    <!-- Incluye aquí tus CSS principales y los de Leaflet -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" />
+    <link rel='stylesheet' href='/stylesheets/style.css'/>
+    <% include header %>
+</head>
+
+<body>
+    
+  <div class="titulo">
+    <a href="/" id="h1" class="fa fa-map-location navbar-brand"> M€B</a>
+    <a href="/" style="text-decoration: none; color: inherit;">
+        <h1>MADRID DE BOLSILLO</h1>
+    </a>
+    <a href="/" id="h1" class="fa fa-map-location navbar-brand"> M€B</a>
+  </div>
+
+  <div id="Contenedor1">
+    <div style="text-align: center;">
+      <p><strong><%= title %></strong> es una plataforma que hace que explorar Madrid sea asequible y emocionante...</p>
+      <p>Gastronomía <i class="fas fa-utensils" style="color: #ef476f;"></i> | Ocio <i class="fas fa-gamepad" style="color: #8338ec;"></i> | Naturaleza <i class="fas fa-tree" style="color: #43aa8b;"></i> | y mucho más...</p>
+      <h5 style="color: #ffeba7;"><strong>¡Empieza ya a buscar los mejores planes de Madrid!</strong></h5>
+    </div>
+  </div>
+  
+  <div id="map-container">
+      
+    <div id="panel-filtros">
+      <h4><i class="fas fa-filter"></i> Filtros y Búsqueda</h4>
+      <hr>
+      <div class="filtro-grupo">
+        <label for="input-zona">Buscar por Zona o Dirección</label>
+        <div class="input-grupo">
+          <input type="text" id="input-zona" placeholder="Ej: Atocha, Sol, 28013...">
+          <button id="boton-buscar-zona"><i class="fas fa-search"></i></button>
+        </div>
+      </div>
+      <div class="filtro-grupo">
+        <label>Categorías (puedes elegir varias)</label>
+        <div id="circle-container">
+          <div class="circle" data-category="Restauración" title="Gastronomía"><i class="fas fa-utensils"></i></div>
+          <div class="circle" data-category="Viajes" title="Viajes"><i class="fas fa-plane"></i></div>
+          <div class="circle" data-category="Naturaleza" title="Naturaleza"><i class="fas fa-tree"></i></div>
+          <div class="circle" data-category="Deportes" title="Deportes"><i class="fas fa-futbol"></i></div>
+          <div class="circle" data-category="Ocio" title="Ocio"><i class="fas fa-gamepad"></i></div>
+          <div class="circle" data-category="Gratis" title="Planes Gratuitos"><i class="fas fa-euro-sign"></i></div>
+          <% if (user) { %>
+            <div class="circle" title="Crear Plan"><a href="/crear"><i class="fas fa-pencil-alt"></i></a></div>
+          <% } %>
+        </div>
+      </div>
+      <div class="filtro-grupo">
+        <label for="filtro-municipio">Municipio</label>
+        <select id="filtro-municipio" class="filtro-select"><option value="">Todos los municipios</option></select>
+      </div>
+      <div class="filtro-grupo">
+        <label for="filtro-valoracion">Valoración Mínima</label>
+        <select id="filtro-valoracion" class="filtro-select">
+            <option value="0">Cualquiera</option>
+            <option value="1">★☆☆☆☆+</option>
+            <option value="2">★★☆☆☆+</option>
+            <option value="3">★★★☆☆+</option>
+            <option value="4">★★★★☆+</option>
+            <option value="5">★★★★★</option>
+        </select>
+      </div>
+      <button id="boton-limpiar-filtros">Limpiar Filtros</button>
+    </div>
+
+    <div id="mapid"></div>
+
+    <div id="custom-route-panel" class="hidden">
+        <div id="panel-search-view">
+            <h4>Calcular Ruta</h4>
+            <div class="form-group"><label for="route-start">Origen:</label><input type="text" id="route-start" placeholder="Escribe o haz clic derecho..."></div>
+            <div class="form-group"><label for="route-end">Destino:</label><input type="text" id="route-end" disabled></div>
+            <div class="form-group">
+                <label for="route-profile">Modo de Transporte:</label>
+                <select id="route-profile">
+                    <option value="car">🚗 Coche</option>
+                    <option value="foot">🚶 A pie</option>
+                    <option value="bike">🚴 Bici</option>
+                </select>
+            </div>
+            <button id="create-route-btn">Crear Ruta</button>
+            <button id="close-panel-btn">Cancelar</button>
+        </div>
+        <div id="panel-reset-view" class="hidden">
+            <p>Ruta activa. Pulsa para empezar de nuevo.</p>
+            <button id="reset-route-btn">Nueva Búsqueda</button>
+        </div>
+    </div>
+    
+    <div id="popup-slider">
+      <div class="slider-header">
+        <h4 id="resultados-titulo">Resultados</h4>
+        <button id="slider-close-button"><i class="fas fa-times"></i></button>
+      </div>
+      <hr style="margin: 0;">
+      <div id="popup-contenido"></div>
+    </div>
+
+    <button id="slider-open-button" class="oculto" title="Ver resultados">
+        <i class="fas fa-chevron-right"></i>
+    </button>
+  </div>
+
+  <style>
+    .oculto { display: none !important; }
+    #map-container { position: relative; margin: 20px auto; width: 80%; height: 700px; border-radius: 10px; overflow: hidden; border: 1px solid #ccc;}
+    #mapid { height: 100%; width: 100%; }
+    #panel-filtros { position: absolute; top: 15px; right: 15px; z-index: 1000; background-color: rgba(255, 255, 255, 0.95); padding: 15px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); width: 320px; max-height: calc(100% - 30px); overflow-y: auto; border: 1px solid #ddd; }
+    .circle.selected i { background-color: #007bff; color: white; border-color: #0056b3; transform: scale(1.1); }
+    #panel-filtros h4 { margin-top: 0; color: #333; }
+    .filtro-grupo { margin-bottom: 15px; }
+    .filtro-grupo label { display: block; margin-bottom: 8px; font-weight: bold; color: #555; font-size: 0.9em; }
+    .input-grupo { display: flex; }
+    #panel-filtros #input-zona { flex-grow: 1; border: 1px solid #ccc; padding: 8px; border-radius: 4px 0 0 4px; outline: none; }
+    #panel-filtros #boton-buscar-zona { padding: 8px 12px; border: 1px solid #007bff; background-color: #007bff; color: white; cursor: pointer; border-radius: 0 4px 4px 0; }
+    #circle-container { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;}
+    .circle { cursor: pointer; }
+    .circle i { font-size: 1.5em; padding: 8px; border-radius: 50%; width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; border: 2px solid #ddd; transition: all 0.2s ease; background-color: #f0f0f0; color: #555; }
+    .circle i:hover { transform: scale(1.1); border-color: #aaa; }
+    .filtro-select { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; background-color: white; color: #333; -webkit-appearance: none; -moz-appearance: none; appearance: none; background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23333333%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.4-12.8z%22%2F%3E%3C%2Fsvg%3E'); background-repeat: no-repeat; background-position: right .7em top 50%; background-size: .65em auto; }
+    #popup-slider { position: absolute; top: 0; left: 0; width: 320px; height: 100%; background-color: rgba(255, 255, 255, 0.98); box-shadow: 3px 0 15px rgba(0, 0, 0, 0.2); z-index: 1001; overflow-y: auto; transform: translateX(-100%); transition: transform 0.4s ease-in-out; display: flex; flex-direction: column; }
+    #popup-slider.visible { transform: translateX(0); }
+    .slider-header { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; background-color: #f8f9fa; border-bottom: 1px solid #dee2e6; }
+    .slider-header h4 { margin: 0; }
+    #slider-close-button { background: transparent; border: none; font-size: 1.5em; cursor: pointer; color: #6c757d; padding: 0; }
+    #popup-contenido { padding: 15px; flex-grow: 1; }
+    .popup-lugar { padding: 10px; border-bottom: 1px solid #eee; cursor: pointer; transition: background-color 0.2s; }
+    .popup-lugar:last-child { border-bottom: none; }
+    .popup-lugar:hover { background-color: #f0f8ff; }
+    .popup-lugar .valoracion-texto { color: #666; font-size: 0.9em; margin-top: 5px; display: block; }
+    #slider-open-button { position: absolute; top: 20px; left: 20px; z-index: 1001; padding: 10px 15px; background-color: #007bff; color: white; border: none; border-radius: 5px; box-shadow: 0 2px 10px rgba(0,0,0,0.3); cursor: pointer; font-size: 1em; transition: all 0.3s; }
+    .map-icon { background: transparent; border: none; }
+    .icon-background { display: flex; align-items: center; justify-content: center; width: 35px; height: 35px; border-radius: 50%; color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.4); border: 2px solid white; }
+    .icon-background i { font-size: 1.3em; }
+    #custom-route-panel { position: absolute; top: 15px; left: 15px; z-index: 1002; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.3); width: 300px; }
+    #custom-route-panel.hidden { display: none; }
+    #custom-route-panel .form-group { margin-bottom: 10px; }
+    #custom-route-panel label { display: block; margin-bottom: 5px; font-weight: bold; }
+    #custom-route-panel input, #custom-route-panel select { width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
+    #custom-route-panel button { width: 100%; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; font-size: 16px; margin-top: 5px; }
+    #create-route-btn { background-color: #28a745; color: white; }
+    #close-panel-btn { background-color: #6c757d; color: white; }
+    #reset-route-btn { background-color: #dc3545; color: white; }
+    #panel-reset-view p { text-align: center; color: #666; margin-top: 10px; }
+  </style>
+
+  <!-- SCRIPTS EXTERNOS -->
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
+  <script src="https://unpkg.com/leaflet-pip@1.1.0/leaflet-pip.js"></script>
+  <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        
+        let mapa, markersLayerGroup, todosLosMarcadores = [], circuloBusqueda = null, poligonoMunicipio = null;
+        const RADIO_DE_BUSQUEDA = 1000;
+        const municipiosComunidadDeMadrid = [ "Ajalvir", "Alameda del Valle", "Alcalá de Henares", "Alcobendas", "Alcorcón", "Aldea del Fresno", "Algete", "Alpedrete", "Ambite", "Anchuelo", "Aranjuez", "Arganda del Rey", "Arroyomolinos", "Batres", "Becerril de la Sierra", "Belmonte de Tajo", "Berzosa del Lozoya", "Boadilla del Monte", "Braojos de la Sierra", "Brea de Tajo", "Brunete", "Buitrago del Lozoya", "Bustarviejo", "Cabanillas de la Sierra", "Cadalso de los Vidrios", "Camarma de Esteruelas", "Campo Real", "Canencia", "Carabaña", "Casarrubuelos", "Cenicientos", "Cercedilla", "Cervera de Buitrago", "Chapinería", "Chinchón", "Ciempozuelos", "Cobeña", "Collado Mediano", "Collado Villalba", "Colmenar de Oreja", "Colmenar del Arroyo", "Colmenar Viejo", "Colmenarejo", "Corpa", "Coslada", "Cubas de la Sagra", "Daganzo de Arriba", "El Álamo", "El Atazar", "El Berrueco", "El Boalo", "El Escorial", "El Molar", "El Vellón", "Estremera", "Fresnedillas de la Oliva", "Fresno de Torote", "Fuenlabrada", "Fuente el Saz de Jarama", "Fuentidueña de Tajo", "Galapagar", "Garganta de los Montes", "Gargantilla del Lozoya y Pinilla de Buitrago", "Gascones", "Getafe", "Griñón", "Guadalix de la Sierra", "Guadarrama", "Horcajo de la Sierra-Aoslos", "Horcajuelo de la Sierra", "Hoyo de Manzanares", "Humanes de Madrid", "La Acebeda", "La Cabrera", "La Hiruela", "La Serna del Monte", "Las Rozas de Madrid", "Leganés", "Loeches", "Los Molinos", "Los Santos de la Humosa", "Lozoya", "Lozoyuela-Navas-Sieteiglesias", "Madarcos", "Madrid", "Majadahonda", "Manzanares el Real", "Meco", "Mejorada del Campo", "Miraflores de la Sierra", "Montejo de la Sierra", "Moraleja de Enmedio", "Moralzarzal", "Morata de Tajuña", "Móstoles", "Navacerrada", "Navalafuente", "Navalagamella", "Navalcarnero", "Navarredonda y San Mamés", "Navas del Rey", "Nuevo Bazán", "Olmeda de las Fuentes", "Orusco de Tajuña", "Paracuellos de Jarama", "Parla", "Patones", "Pedrezuela", "Pelayos de la Presa", "Perales de Tajuña", "Pezuela de las Torres", "Pinilla del Valle", "Pinto", "Piñuécar-Gandullas", "Pozuelo de Alarcón", "Pozuelo del Rey", "Prádena del Rincón", "Puebla de la Sierra", "Puentes Viejas", "Quijorna", "Rascafría", "Redueña", "Ribatejada", "Rivas-Vaciamrid", "Robledillo de la Jara", "Robledo de Chavela", "Robregordo", "Rozas de Puerto Real", "San Agustín del Guadalix", "San Fernando de Henares", "San Lorenzo de El Escorial", "San Martín de la Vega", "San Martín de Valdeiglesias", "San Sebastián de los Reyes", "Santa María de la Alameda", "Santorcaz", "Serranillos del Valle", "Sevilla la Nueva", "Somosierra", "Soto del Real", "Talamanca de Jarama", "Tielmes", "Titulcia", "Torrejón de Ardoz", "Torrejón de la Calzada", "Torrejón de Velasco", "Torrelaguna", "Torrelodones", "Torremocha de Jarama", "Torres de la Alameda", "Tres Cantos", "Valdaracete", "Valdeavero", "Valdelaguna", "Valdemanco", "Valdemaqueda", "Valdemorillo", "Valdemoro", "Valdeolmos-Alalpardo", "Valdepiélagos", "Valdetorres de Jarama", "Valdilecha", "Valverde de Alcalá", "Velilla de San Antonio", "Venturada", "Villa del Prado", "Villaconejos", "Villalbilla", "Villamanrique de Tajo", "Villamanta", "Villamantilla", "Villanueva de la Cañada", "Villanueva de Perales", "Villanueva del Pardillo", "Villar del Olmo", "Villarejo de Salvanés", "Villaviciosa de Odón", "Villavieja del Lozoya", "Zarzalejo" ].sort();
+        const estadoFiltros = { centroGeografico: null, categorias: [], municipio: '', valoracion: 0 };
+        const slider = document.getElementById('popup-slider');
+        const openSliderBtn = document.getElementById('slider-open-button');
+        const closeSliderBtn = document.getElementById('slider-close-button');
+        const popupContenido = document.getElementById('popup-contenido');
+        const resultadosTitulo = document.getElementById('resultados-titulo');
+        const iconMapping = { 'Restauración': { icon: 'fas fa-utensils', color: '#ef476f' }, 'Viajes': { icon: 'fas fa-plane', color: '#118ab2' }, 'Naturaleza': { icon: 'fas fa-tree', color: '#43aa8b' }, 'Deportes': { icon: 'fas fa-futbol', color: '#f9844a' }, 'Ocio': { icon: 'fas fa-gamepad', color: '#8338ec' }, 'Gratis': { icon: 'fas fa-euro-sign', color: '#ffd60a' }, 'sin asignar': { icon: 'fas fa-map-marker-alt', color: '#577590' }};
+        const colorPorDefecto = { background: '#f0f0f0', icon: '#555', border: '#ddd' };
+        
+        let controlDeRuta = null;
+        const customRoutePanel = document.getElementById('custom-route-panel');
+        const searchView = document.getElementById('panel-search-view');
+        const resetView = document.getElementById('panel-reset-view');
+        const routeStartInput = document.getElementById('route-start');
+        const routeEndInput = document.getElementById('route-end');
+        const routeProfileSelect = document.getElementById('route-profile');
+        const createRouteBtn = document.getElementById('create-route-btn');
+        const closePanelBtn = document.getElementById('close-panel-btn');
+        const resetRouteBtn = document.getElementById('reset-route-btn');
+
+        async function inicializarApp() {
+            inicializarMapa();
+            poblarFiltrosDinamicos(); 
+            configurarEventListenersDeRuta();
+            configurarEventListeners(); 
+            await cargarTodosLosMarcadores();
+            aplicarFiltros();
+        }
+        
+        function inicializarMapa() {
+            if (mapa) mapa.remove();
+            mapa = L.map('mapid').setView([40.41, -3.68], 13);
+            markersLayerGroup = L.layerGroup().addTo(mapa);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap contributors' }).addTo(mapa);
+        
+            mapa.on('popupopen', function(e) {
+                const routeButton = e.popup.getElement().querySelector('.route-button');
+                if (routeButton) {
+                    L.DomEvent.on(routeButton, 'click', function() {
+                        const markerId = routeButton.dataset.markerId;
+                        const markerData = todosLosMarcadores.find(m => m._id === markerId);
+                        if (markerData && markerData.leaflet_latlng) {
+                            mapa.closePopup();
+                            routeEndInput.value = markerData.title || markerData.nombre;
+                            customRoutePanel.dataset.destLat = markerData.leaflet_latlng.lat;
+                            customRoutePanel.dataset.destLng = markerData.leaflet_latlng.lng;
+                            customRoutePanel.dataset.destName = markerData.title || markerData.nombre;
+                            routeStartInput.value = '';
+                            showSearchView();
+                            routeStartInput.focus();
+                        }
+                    });
+                }
+            });
+        }
+        
+        function showSearchView() {
+            searchView.classList.remove('hidden');
+            resetView.classList.add('hidden');
+            customRoutePanel.classList.remove('hidden');
+        }
+
+        function showResetView() {
+            searchView.classList.add('hidden');
+            resetView.classList.remove('hidden');
+            customRoutePanel.classList.remove('hidden');
+        }
+            
+        function createRoute(originCoords, originName, destCoords, destName, profile) {
+            if (controlDeRuta) mapa.removeControl(controlDeRuta);
+            
+            controlDeRuta = L.Routing.control({
+                position: 'topright',
+                waypoints: [ L.Routing.waypoint(originCoords, originName), L.Routing.waypoint(destCoords, destName) ],
+                router: L.Routing.osrmv1({
+                    serviceUrl: `https://router.project-osrm.org/route/v1`,
+                    profile: profile, 
+                    language: 'es'
+                }),
+                language: 'es',
+                geocoder: L.Control.Geocoder.nominatim(),
+                show: true,
+                addWaypoints: false,
+                draggableWaypoints: false,
+                fitSelectedRoutes: true
+            }).addTo(mapa);
+
+            showResetView();
+        }
+
+        function limpiarRutaActiva() {
+            if (controlDeRuta) {
+                mapa.removeControl(controlDeRuta);
+                controlDeRuta = null;
+            }
+        }
+
+        function limpiarTodosLosFiltros() {
+            limpiarRutaActiva();
+            customRoutePanel.classList.add('hidden');
+            estadoFiltros.centroGeografico = null;
+            estadoFiltros.categorias = [];
+            estadoFiltros.municipio = '';
+            estadoFiltros.valoracion = 0;
+            document.getElementById('input-zona').value = '';
+            document.getElementById('filtro-municipio').value = '';
+            document.getElementById('filtro-valoracion').value = 0;
+            document.querySelectorAll('.circle[data-category].selected').forEach(circle => {
+                circle.classList.remove('selected');
+                const icon = circle.querySelector('i');
+                icon.style.backgroundColor = colorPorDefecto.background;
+                icon.style.color = colorPorDefecto.icon;
+                icon.style.borderColor = colorPorDefecto.border;
+            });
+            if (circuloBusqueda) mapa.removeLayer(circuloBusqueda);
+            if (poligonoMunicipio) mapa.removeLayer(poligonoMunicipio);
+            circuloBusqueda = null;
+            poligonoMunicipio = null;
+            aplicarFiltros();
+            mapa.setView([40.41, -3.68], 13);
+            cerrarSlider();
+        }
+        
+        function crearContenidoPopup(marker) {
+            const precio = marker.precio === 0 ? 'Gratis' : `€${marker.precio.toFixed(2)}`;
+            const imagen = marker.image ? `<img src="${marker.image}" alt="${marker.title}" style="width:100%; height:auto; border-radius:4px; margin-bottom:10px;">` : '';
+            const valoracionTexto = marker.valoracionMedia > 0 ? `${marker.valoracionMedia.toFixed(1)}/5 ★` : 'Aún sin valorar';
+            return `<div style="width: 220px; text-align: center;">${imagen}<h5 style="margin: 5px 0;">${marker.title || marker.nombre}</h5><p style="margin: 5px 0; font-size: 0.9em;">${marker.info || ''}</p><p style="margin: 5px 0;"><strong>Precio:</strong> ${precio}</p><p style="margin: 5px 0;"><strong>Valoración:</strong> ${valoracionTexto}</p><a href="${marker.masInfo || '#'}" target="_blank" style="text-decoration: none; color: #007bff; font-weight: bold; display: block; margin-bottom: 10px;">Más Info</a><button class="btn btn-primary btn-sm route-button" data-marker-id="${marker._id}"><i class="fas fa-route"></i> Cómo llegar</button></div>`;
+        }
+
+        function configurarEventListenersDeRuta() {
+            createRouteBtn.addEventListener("click", function () {
+                const originText = routeStartInput.value;
+                const destLat = customRoutePanel.dataset.destLat;
+                const destLng = customRoutePanel.dataset.destLng;
+                const destName = customRoutePanel.dataset.destName;
+                const destCoords = L.latLng(destLat, destLng);
+                const profile = routeProfileSelect.value;
+                
+                if (!originText) return alert("Por favor, introduce un punto de origen.");
+                
+                if (originText.startsWith("(") && originText.endsWith(")")) {
+                    try {
+                        const parts = originText.replace(/[()]/g, "").split(",");
+                        const lat = parseFloat(parts[0]);
+                        const lng = parseFloat(parts[1]);
+                        createRoute(L.latLng(lat, lng), "Punto en el mapa", destCoords, destName, profile);
+                    } catch (e) {
+                        alert("Las coordenadas del mapa no son válidas.");
+                    }
+                } else {
+                    fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(originText + ", Madrid")}`)
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data && data.length > 0) {
+                                createRoute(L.latLng(data[0].lat, data[0].lon), data[0].display_name, destCoords, destName, profile);
+                            } else {
+                                alert(`No se pudo encontrar la ubicación de origen: "${originText}".`);
+                            }
+                        })
+                        .catch(err => {
+                            console.error("Error al buscar origen:", err);
+                            alert("Error de conexión al buscar la dirección.");
+                        });
+                }
+            });
+
+            resetRouteBtn.addEventListener("click", function () {
+                limpiarRutaActiva();
+                showSearchView();
+            });
+
+            closePanelBtn.addEventListener("click", function () {
+                limpiarRutaActiva();
+                customRoutePanel.classList.add("hidden");
+            });
+
+            mapa.on("contextmenu", function (e) {
+                if (!customRoutePanel.classList.contains("hidden") && !searchView.classList.contains('hidden')) {
+                    routeStartInput.value = `(${e.latlng.lat.toFixed(5)}, ${e.latlng.lng.toFixed(5)})`;
+                }
+            });
+
+            routeProfileSelect.addEventListener("change", function () {
+                if (controlDeRuta) {
+                    const waypoints = controlDeRuta.getWaypoints();
+                    if (waypoints.length === 2 && waypoints[0].latLng && waypoints[1].latLng) {
+                        createRoute(waypoints[0].latLng, waypoints[0].name, waypoints[1].latLng, waypoints[1].name, routeProfileSelect.value);
+                    }
+                }
+            });
+        }
+        
+        async function cargarTodosLosMarcadores() { try { const e=await fetch("/json"); todosLosMarcadores=await e.json(),todosLosMarcadores.forEach(m=>{m.latlng&&"number"==typeof m.latlng.lat&&"number"==typeof m.latlng.lng&&(m.leaflet_latlng=L.latLng(m.latlng.lat,m.latlng.lng));let t=0,a=0;m.valoraciones&&m.valoraciones.length>0?(m.valoraciones.forEach(v=>t+=v.puntuacion),a=m.valoraciones.length,m.valoracionMedia=t/a):m.valoracionMedia=3+1.5*Math.random(),m.numeroVotos=a}) }catch(e){console.error("Error al cargar los marcadores:",e),todosLosMarcadores=[]} }
+        function poblarFiltrosDinamicos() { const e=document.getElementById("filtro-municipio");if(!e)return;e.innerHTML='<option value="">Todos los municipios</option>',municipiosComunidadDeMadrid.forEach(m=>{const t=document.createElement("option");t.value=m,t.textContent=m,e.appendChild(t)}) }
+        async function iniciarBusquedaGeografica() { const e=document.getElementById("input-zona").value.trim().toLowerCase();if(!e)return;circuloBusqueda&&mapa.removeLayer(circuloBusqueda),poligonoMunicipio&&(mapa.removeLayer(poligonoMunicipio),poligonoMunicipio=null,document.getElementById("filtro-municipio").value="",estadoFiltros.municipio=""),estadoFiltros.centroGeografico=null;try{const t=await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(e+", Madrid, Spain")}&format=json&limit=1`),a=await t.json();a.length>0?(estadoFiltros.centroGeografico=L.latLng(parseFloat(a[0].lat),parseFloat(a[0].lon)),circuloBusqueda=L.circle(estadoFiltros.centroGeografico,{radius:RADIO_DE_BUSQUEDA,color:"#007bff",fillColor:"#007bff",fillOpacity:.2}).addTo(mapa),mapa.setView(estadoFiltros.centroGeografico,15),aplicarFiltros(),abrirSlider()):alert("No se encontraron resultados para el lugar introducido.")}catch(e){console.error("Error al buscar ubicación:",e),alert("Hubo un problema al buscar la ubicación.")} }
+        function aplicarFiltros() { let e=[...todosLosMarcadores];poligonoMunicipio?e=e.filter(m=>m.leaflet_latlng&&leafletPip.pointInLayer(m.leaflet_latlng,poligonoMunicipio).length>0):estadoFiltros.centroGeografico&&(e=e.filter(m=>m.leaflet_latlng&&estadoFiltros.centroGeografico.distanceTo(m.leaflet_latlng)<=RADIO_DE_BUSQUEDA)),estadoFiltros.categorias.length>0&&(e=e.filter(m=>{const t=m.plan==="gratis"?"Gratis":m.category;return estadoFiltros.categorias.includes(t)})),estadoFiltros.valoracion>0&&(e=e.filter(m=>m.valoracionMedia>=estadoFiltros.valoracion)),mostrarResultados(e) }
+        function mostrarResultados(e) { limpiarVista(),resultadosTitulo.textContent=`Resultados (${e.length})`,e.length>0?(openSliderBtn.innerHTML=`<i class="fas fa-list-ul"></i> Ver ${e.length} Resultados`,openSliderBtn.classList.remove("oculto"),e.forEach(m=>{agregarMarcadorAlMapa(m),agregarResultadoAlSlider(m)}),!estadoFiltros.centroGeografico&&!poligonoMunicipio&&markersLayerGroup.getLayers().length>0&&mapa.fitBounds(markersLayerGroup.getBounds().pad(.1))):(popupContenido.innerHTML="<p>No se encontraron resultados que coincidan con los filtros.</p>",openSliderBtn.classList.add("oculto"),cerrarSlider()) }
+        function limpiarVista() { markersLayerGroup.clearLayers(),popupContenido&&(popupContenido.innerHTML="") }
+        function abrirSlider() { slider&&slider.classList.add("visible") }
+        function cerrarSlider() { slider&&slider.classList.remove("visible") }
+        function agregarMarcadorAlMapa(e) { if(!e.leaflet_latlng)return;const t=crearIconoPersonalizado(e);L.marker(e.leaflet_latlng,{icon:t}).bindPopup(()=>crearContenidoPopup(e)).addTo(markersLayerGroup) }
+        function agregarResultadoAlSlider(e) { const t=0===e.precio?"Gratis":`€${e.precio.toFixed(2)}`,a=e.valoracionMedia>0?e.valoracionMedia.toFixed(1)+" ★":"Sin valorar",o=`(${e.numeroVotos} ${1===e.numeroVotos?"voto":"votos"})`,n=document.createElement("div");n.className="popup-lugar",n.innerHTML=`<strong>${e.title||e.nombre}</strong><br><small>${e.info||""}</small><br><small>Precio: ${t}</small><br><span class="valoracion-texto">Valoración: <strong>${a}</strong> <small>${o}</small></span><a href="${e.masInfo||"#"}" target="_blank" style="font-weight: bold; color: #007bff; text-decoration: none;">Más info</a>`,n.addEventListener("click",()=>{e.leaflet_latlng&&mapa.setView(e.leaflet_latlng,17)}),popupContenido&&popupContenido.appendChild(n) }
+        function crearIconoPersonalizado(e) { const t="gratis"===e.plan?"Gratis":e.category||"sin asignar",{icon:a,color:o}=iconMapping[t]||iconMapping["sin asignar"],n=`<div class="icon-background" style="background-color: ${o};"><i class="${a}"></i></div>`;return L.divIcon({html:n,className:"map-icon",iconSize:[35,35],iconAnchor:[18,35]}) }
+        function configurarEventListeners() { if(openSliderBtn)openSliderBtn.addEventListener("click",abrirSlider);if(closeSliderBtn)closeSliderBtn.addEventListener("click",cerrarSlider);document.getElementById("boton-buscar-zona")?.addEventListener("click",iniciarBusquedaGeografica),document.getElementById("input-zona")?.addEventListener("keypress",e=>{if("Enter"===e.key)iniciarBusquedaGeografica()}),document.querySelectorAll(".circle[data-category]").forEach(c=>{const e=c.querySelector("a");if(e)return;c.addEventListener("click",function(){const e=this.dataset.category,t=this.querySelector("i"),a=this.classList.toggle("selected");if(a){const c=iconMapping[e]||iconMapping["sin asignar"];t.style.backgroundColor=c.color,t.style.color="white",t.style.borderColor=c.color,estadoFiltros.categorias.push(e)}else{t.style.backgroundColor=colorPorDefecto.background,t.style.color=colorPorDefecto.icon,t.style.borderColor=colorPorDefecto.border;const c=estadoFiltros.categorias.indexOf(e);c>-1&&estadoFiltros.categorias.splice(c,1)}aplicarFiltros()})}),document.getElementById("filtro-municipio")?.addEventListener("change",async e=>{const t=e.target.value;if(poligonoMunicipio&&mapa.removeLayer(poligonoMunicipio),poligonoMunicipio=null,estadoFiltros.municipio=t,!t)return aplicarFiltros(),void mapa.setView([40.41,-3.68],13);try{const a=await fetch(`/municipio-limites?nombre=${encodeURIComponent(t)}`);if(!a.ok)throw new Error("No se pudo obtener el polígono.");const o=await a.json();poligonoMunicipio=L.geoJSON(o.geojson,{style:{color:"#ff7800",weight:3,opacity:.65,fillOpacity:.1}}).addTo(mapa),mapa.fitBounds(poligonoMunicipio.getBounds())}catch(a){console.error(a),alert("No se pudieron cargar los límites del municipio.")}finally{aplicarFiltros()}}),document.getElementById("filtro-valoracion")?.addEventListener("change",e=>{estadoFiltros.valoracion=Number(e.target.value),aplicarFiltros()}),document.getElementById("boton-limpiar-filtros")?.addEventListener("click",limpiarTodosLosFiltros) }
+    
+        inicializarApp();
+    });
+  </script>
+
+  <% include footer %>
+</body>
+</html>

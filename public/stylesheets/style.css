@@ -1,0 +1,442 @@
+:root {
+    --clr-primary: #14273e;
+    --clr-secondary: #ffeba7;
+    --bg-primary: #0d1a2d;
+    --bg-secondary: #14273e;
+    --text-primary: #ccc;
+    --text-secondary: #0d1a2d;
+  }
+  
+  /* Estilos generales */
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+  
+  * {
+    margin: 0;
+    font: inherit;
+  }
+  
+  html {
+    color-scheme: dark;
+  }
+  
+  @import url('https://fonts.googleapis.com/css?family=Poppins:400,500,600,700,800,900');
+  body{
+	  font-family: 'Poppins', sans-serif;
+    min-height: 100vh;
+    background-image: url('https://images.unsplash.com/photo-1531370356290-5892e5dce3b7?q=80&w=2077&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
+    background-color: #1f2029;
+    background-size: cover;
+    background-position: center;
+    color: var(--text-primary);
+    padding: 1%;
+  }
+  
+  /* Contenedor principal (Fondo) */
+  #Contenedor1 {
+    background: rgba(13, 26, 45, 0.5); /* Opacidad 0.5 = 50% */
+    padding: 20px;
+    border-radius: 10px;
+    backdrop-filter: blur(10px); /* desenfoque */
+    background-size: cover;
+    background-position: center;
+  }
+  
+  .titulo {
+    position: relative;
+    margin-top: 1%;
+    margin-bottom: 1%;
+    margin-left: 40%;
+  }
+
+  h1 {
+    position: relative;
+    color: transparent; 
+    -webkit-text-stroke: 1px #ffeba7; 
+  }
+
+  #h1 {
+    position: relative;
+    font-size: 36px; 
+    margin-left: 140px;
+    color: transparent; 
+    -webkit-text-stroke: 1px #ffeba7; 
+  
+  }
+
+  .centrador {
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 55%; 
+    margin: 0 auto; 
+  }
+  
+
+  .navbar-text,
+  .navbar-brand,
+  .nav-link,
+  .dropdown-menu {
+      color: #ccc;
+  }
+
+  .navbar-toggler-icon span {
+      background-color: #ccc;
+  }
+
+  .navbar-toggler-icon.custom-color span {
+      background-color: #ccc;
+  }
+
+  /* Estilos de los iconos */
+  .custom-div-icon {
+    width: 80px;
+    height: 80px;
+    border-color: black;
+    border-radius: 70%;
+    text-align: center;
+    line-height: 20px; 
+    font-size: 24px; 
+  }
+  
+  .fas {
+    font-size: 40px; 
+  }
+  
+  /* Marcadores de estado */
+  #markerR {
+    color: #ef476f;
+    font-size: 20px;
+  }
+  
+  #markerV {
+    color: #118ab2;
+    font-size: 20px;
+  }
+  
+  #markerN {
+    color: #43aa8b;
+    font-size: 20px;
+  }
+  
+  #markerD {
+    color: #f9844a;
+    font-size: 20px;
+  }
+  
+  #markerO {
+    color: #815ac0;
+    font-size: 20px;
+  }
+  
+  #markerOt {
+    color: #ff009d;
+    font-size: 20px;
+  }
+  
+/* Estilos del círculo */
+.circle {
+  color: var(--text-primary);
+  width: 80px; 
+  height: 80px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%; 
+  border: 4px solid var(--text-primary); 
+  margin: 10px; 
+  transition: transform 0.3s, border-color 0.3s; 
+}
+
+#icono {
+  font-size: 24px;
+}
+
+/* FILTRO MARCADORES */
+.circle:hover {
+  transform: scale(1.1); 
+}
+
+.circle:hover i {
+  color: inherit; /* Reinicia el color del icono */
+}
+
+.circle[data-category="Restauración"]:hover {
+  border-color: #ef476f;
+}
+
+.circle[data-category="Restauración"]:hover i {
+  color: #ef476f; 
+}
+
+.circle[data-category="Viajes"]:hover {
+  border-color: #118ab2;
+}
+
+.circle[data-category="Viajes"]:hover i {
+  color: #118ab2;
+}
+
+.circle[data-category="Naturaleza"]:hover {
+  border-color: #43aa8b;
+}
+
+.circle[data-category="Naturaleza"]:hover i {
+  color: #43aa8b;
+}
+
+.circle[data-category="Deportes"]:hover {
+  border-color: #f9844a;
+}
+
+.circle[data-category="Deportes"]:hover i {
+  color: #f9844a;
+}
+
+.circle[data-category="Ocio"]:hover {
+  border-color: #815ac0;
+}
+
+.circle[data-category="Ocio"]:hover i {
+  color: #815ac0;
+}
+
+.circle[data-category="Gratis"]:hover {
+  border-color: #ffd60a;
+}
+
+.circle[data-category="Gratis"]:hover i {
+  color: #ffd60a;
+}
+
+.circle[data-category="Otro"]:hover {
+  border-color: #ff009d;
+}
+
+.circle[data-category="Otro"]:hover i {
+  color: #ff009d;
+}
+
+.circle a {
+  text-decoration: none; 
+}
+
+.circle a:hover {
+  color: #ff009d;
+}
+
+.btn a {
+  color: var(--clr-primary); 
+  text-decoration: none; 
+}
+.btn a:hover {
+  color: var(--text-primary);
+}
+
+
+  #main-content {
+    display: flex;
+    justify-content: center;
+    height: 50%; 
+  }
+
+  .editarPlan {
+    margin-right: 3%;
+    position: absolute;
+    bottom: 20%; 
+    right: 90%; 
+    padding: 10px 20px;
+    border: none; 
+    background-color: var(--clr-primary); 
+    color: var(--text-primary); 
+    border-radius: 5px; 
+    font-size: 16px; 
+    cursor: pointer; 
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+    transition: background-color 0.3s;
+  }
+
+  .editarPlan:hover {
+    background-color: var(--clr-secondary); 
+    color: var(--text-secondary); 
+  }
+  
+  .editarPlan i {
+    margin-right: 5px;
+  }
+
+  #footer {
+    display: none; 
+    position: relative; 
+    margin-top: 20px; 
+  }
+
+  #VolverInicio {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 18px;
+    color: var(--text-primary);
+    background-color: var(--bg-primary);
+    border-radius: 5px;
+    text-decoration: none;
+    transition: background-color 0.3s;
+  }
+
+  #VolverInicio:hover {
+    background-color: #ffeba7;
+    color: #1f2029;
+  }
+
+/* OFFCANVAS DE crear.ejs */
+
+.offcanvas {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+}
+
+.offcanvas-header {
+    border-bottom: 1px solid var(--clr-secondary);
+}
+
+.offcanvas-title {
+    color: var(--text-primary);
+}
+
+.btn-close {
+    filter: invert(1);
+}
+
+.dropdown-menu {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--clr-secondary);
+}
+
+.dropdown-item {
+    color: var(--text-primary);
+}
+
+.dropdown-item:hover, .dropdown-item:focus {
+    background-color: var(--clr-secondary);
+    color: var(--text-secondary);
+}
+
+.btn-secondary {
+    background-color: var(--clr-secondary);
+    color: var(--text-secondary);
+    border: none;
+}
+
+.btn-secondary:hover, .btn-secondary:focus {
+  background-color: var(--bg-primary);
+  color: var(--clr-secondary);
+}
+
+.btn-danger {
+    background-color: #dc3545;
+}
+
+.btn-danger:hover, .btn-danger:focus {
+    background-color: #c82333;
+}
+
+.btn-primary {
+    border: none;
+}
+
+.btn-primary:hover, .btn-primary:focus {
+    background-color: var(--bg-primary);
+    color: var(--clr-secondary);
+}
+
+.modal-content {
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+}
+
+.modal-header {
+    border-bottom: 1px solid var(--clr-secondary);
+}
+
+.modal-footer {
+    border-top: 1px solid var(--clr-secondary);
+}
+
+.form-control {
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    border: 1px solid var(--clr-secondary);
+}
+
+.form-control:focus {
+    border-color: var(--clr-secondary);
+    box-shadow: 0 0 0 0.2rem rgba(255, 235, 167, 0.25);
+}
+
+.form-text {
+    color: var(--text-primary);
+}
+/* ========================================================== */
+/* ========= ESTILOS PARA DISPOSITIVOS MÓVILES ============== */
+/* ========================================================== */
+
+/* Estos estilos se aplicarán solo en pantallas con un ancho MÁXIMO de 768px (tablets y móviles) */
+@media (max-width: 768px) {
+
+  /* 1. Ajustar el contenedor principal del mapa */
+  #map-container {
+    width: 100%; /* Ocupa todo el ancho de la pantalla */
+    height: auto; /* La altura se ajustará al contenido */
+    margin: 0; /* Sin márgenes laterales */
+    border-radius: 0; /* Sin bordes redondeados */
+    display: flex; /* Usamos flexbox para reordenar los elementos */
+    flex-direction: column; /* Apilamos los elementos verticalmente (filtros arriba, mapa abajo) */
+  }
+
+  /* 2. Reposicionar y rediseñar el panel de filtros */
+  #panel-filtros {
+    position: relative; /* Quitamos el 'position: absolute' que lo hacía flotar */
+    width: 100%; /* Ocupa todo el ancho */
+    max-height: none; /* Quitamos la altura máxima */
+    top: 0; /* Reseteamos la posición */
+    right: 0; /* Reseteamos la posición */
+    border-radius: 0;
+    box-shadow: none; /* Quitamos la sombra */
+    border: none;
+    border-bottom: 2px solid #ddd; /* Añadimos un borde inferior para separarlo del mapa */
+    margin-bottom: 10px; /* Un pequeño espacio antes del mapa */
+  }
+
+  /* 3. Ajustar el tamaño del mapa */
+  #mapid {
+    height: 50vh; /* El mapa ocupará el 50% de la altura de la pantalla del móvil */
+    width: 100%;
+  }
+
+  /* 4. Ajustar el texto de bienvenida */
+  #Contenedor1 {
+    width: 95%; /* Hacemos que el contenedor sea un poco más estrecho que la pantalla */
+    padding: 20px 10px; /* Reducimos el padding */
+  }
+
+  #Contenedor1 h5 {
+    font-size: 1.1rem; /* Reducimos un poco el tamaño de la fuente */
+  }
+  
+  /* 5. Ajustar los círculos de categorías */
+  #circle-container {
+      gap: 5px; /* Reducimos el espacio entre los círculos */
+  }
+  .circle i {
+      width: 40px; /* Círculos un poco más pequeños */
+      height: 40px;
+      font-size: 1.2em; /* Iconos un poco más pequeños */
+  }
+  
+  /* 6. (Opcional) Si el slider de resultados se ve mal */
+  #popup-slider {
+      width: 90%; /* Hacemos que el slider ocupe casi toda la pantalla */
+  }
+}

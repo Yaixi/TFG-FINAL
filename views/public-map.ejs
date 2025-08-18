@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- El título de la página será "Mapa de [Nombre del Usuario]" o "Mapa de Usuario" si no se encuentra el nombre -->
+    <title>Mapa de <%= typeof ownerName !== 'undefined' ? ownerName : 'Usuario' %></title>
+    
+    <!-- Incluimos la librería de mapas Leaflet (CSS y JS) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <style>
+        /* Estilos básicos para que el mapa ocupe toda la pantalla */
+        body { 
+            padding: 0;
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+        html, body, #map {
+            height: 100%;
+            width: 100%;
+        }
+        
+        /* Estilo para un título flotante, para que el usuario sepa de quién es el mapa */
+        .map-title {
+            position: fixed;
+            top: 10px;
+            left: 50px;
+            z-index: 1000; /* Para que esté por encima de los controles del mapa */
+            background: rgba(255, 255, 255, 0.9);
+            padding: 5px 15px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            box-shadow: 0 1px 5px rgba(0,0,0,0.4);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Este es el contenedor donde se dibujará el mapa -->
+    <div id="map"></div>
+    
+    <div class="map-title">
+        <!-- Mostramos el nombre del propietario. Si no existe, muestra un texto por defecto. -->
+        <h3>Mapa de <%= typeof ownerName !== 'undefined' ? ownerName : 'Usuario' %></h3>
+    </div>
+
+    <script>
+      // Envolvemos todo el código en un evento para asegurar que la página se haya cargado completamente.
+      document.addEventListener('DOMContentLoaded', function () {
+        
+        // 1. Recibimos los datos de los marcadores desde EJS de forma segura.
+        // --- ESTA ES LA LÍNEA CORRECTA ---
+        // El editor (VSCode) puede marcarla como un error porque no entiende la sintaxis EJS (<%- %>).
+        // ¡No te preocupes! Esto es solo un error visual, el código funcionará correctamente.
+        const markersData = <%- JSON.stringify(markers || []) %>;
+
+        // 2. Inicializamos el mapa en el div con id="map"
+        const map = L.map('map');
+
+        // 3. Añadimos la capa de teselas (el mapa base) de OpenStreetMap
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        // 4. Procesamos los marcadores
+        if (markersData && markersData.length > 0) {
+            const markerGroup = L.featureGroup(); // Usamos un grupo para centrar el mapa fácilmente.
+
+            markersData.forEach(marker => {
+                // Verificamos que el marcador tenga coordenadas válidas antes de intentar dibujarlo.
+                if (marker && marker.latlng && typeof marker.latlng.lat === 'number' && typeof marker.latlng.lng === 'number') {
+                    
+                    const coords = [marker.latlng.lat, marker.latlng.lng];
+                    
+                    const popupContent = `<b>${marker.title || 'Sin título'}</b><br>${marker.info || 'Sin descripción.'}`;
+
+                    // Esta es la línea que crea el marcador, le asigna el popup y lo añade al grupo.
+                    L.marker(coords).bindPopup(popupContent).addTo(markerGroup);
+                }
+            });
+
+            // Añadimos el grupo completo de marcadores al mapa de una sola vez.
+            markerGroup.addTo(map);
+
+            // 5. Ajustamos la vista del mapa para que todos los marcadores sean visibles.
+            map.fitBounds(markerGroup.getBounds(), { padding: [50, 50] });
+
+        } else {
+            // Si no hay marcadores, simplemente centramos el mapa en una ubicación por defecto (ej. Madrid)
+            map.setView([40.4167, -3.703], 13);
+            console.log('Este usuario no tiene marcadores para mostrar.');
+        }
+      });
+    </script>
+
+</body>
+</html>

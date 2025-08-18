@@ -1,0 +1,26 @@
+[
+    {
+        "latlng": {
+            "lat": 40.4154,
+            "lng": -3.7074
+        },
+        "title": "Mercado de San Miguel",
+        "info": "Un mercado histórico donde puedes probar tapas y otros alimentos gourmet",
+        "image": "https://turismo.eurodicas.com.br/wp-content/uploads/2019/08/mercado-de-san-miguel-em-madrid.jpg",
+        "category": "Restauración",
+        "masInfo": "https://mercadodesanmiguel.es/",
+        "precio": "20"
+    },
+    {
+        "latlng": {
+            "lat": 40.3964,
+            "lng": -3.7065
+        },
+        "title": "Madrid río",
+        "info": "Enclave lúdico y cultural paralelo al río Manzanares",
+        "image": "https://madrides.es/fr/wp-content/uploads/sites/6/2017/04/4-The-beach-of-Madrid.jpg",
+        "category": "Naturaleza",
+        "masInfo": "https://www.esmadrid.com/informacion-turistica/madrid-rio",
+	"precio": "gratis"
+    }
+]

@@ -1,0 +1,134 @@
+[
+  {
+    "latlng": {
+      "lat": 40.4168,
+      "lng": -3.7038
+    },
+    "title": "Parque del Retiro",
+    "info": "Un amplio y hermoso parque donde puedes disfrutar de un paseo, hacer un picnic o alquilar una barca en el estanque.",
+    "image": "https://example.com/parque_del_retiro.jpg",
+    "category": "Naturaleza",
+    "plan": "gratis",
+    "masInfo": "https://goo.gl/maps/Xn2Xs8y9t6H2"
+  },
+  {
+    "latlng": {
+      "lat": 40.4531,
+      "lng": -3.6883
+    },
+    "title": "Templo de Debod",
+    "info": "Un antiguo templo egipcio situado en el Parque del Oeste, con maravillosas vistas de la ciudad.",
+    "image": "https://example.com/templo_de_debod.jpg",
+    "category": "Viajes",
+    "plan": "gratis",
+    "masInfo": "https://goo.gl/maps/y8Vx7thF6sP2"
+  },
+  {
+    "latlng": {
+      "lat": 40.4154,
+      "lng": -3.7074
+    },
+    "title": "Mercado de San Miguel",
+    "info": "Un mercado histórico donde puedes probar tapas y otros alimentos gourmet.",
+    "image": "https://example.com/mercado_san_miguel.jpg",
+    "category": "Gastronomía",
+    "plan": "lowcost",
+    "masInfo": "https://goo.gl/maps/Z3YTcKZ3xt52"
+  },
+  {
+    "latlng": {
+      "lat": 40.4344,
+      "lng": -3.7156
+    },
+    "title": "Madrid Río",
+    "info": "Un parque lineal a lo largo del río Manzanares con áreas recreativas, jardines y caminos para bicicletas.",
+    "image": "https://example.com/madrid_rio.jpg",
+    "category": "Naturaleza",
+    "plan": "gratis",
+    "masInfo": "https://goo.gl/maps/YH7VRaD4EZQ2"
+  },
+  {
+    "latlng": {
+      "lat": 40.4050,
+      "lng": -3.6853
+    },
+    "title": "Casa de Campo",
+    "info": "El mayor parque público de Madrid, ideal para practicar deportes, caminar o visitar el zoológico y el parque de atracciones.",
+    "image": "https://example.com/casa_de_campo.jpg",
+    "category": "Ocio",
+    "plan": "gratis",
+    "masInfo": "https://goo.gl/maps/Y45F9FNJvHQ2"
+  },
+    {
+      "latlng": {
+        "lat": 40.4211,
+        "lng": -3.7106
+      },
+      "title": "Círculo de Bellas Artes",
+      "info": "Uno de los centros culturales privados más importantes de Europa, con exposiciones, cine y una azotea con vistas panorámicas.",
+      "image": "https://example.com/circulo_bellas_artes.jpg",
+      "category": "Ocio",
+      "plan": "lowcost",
+      "masInfo": "https://goo.gl/maps/4zNQ6jFTtRP2"
+    },
+    {
+      "latlng": {
+        "lat": 40.4153,
+        "lng": -3.6921
+      },
+      "title": "Museo del Prado",
+      "info": "Uno de los museos de arte más importantes del mundo. Entrada gratuita en ciertas horas.",
+      "image": "https://example.com/museo_prado.jpg",
+      "category": "Viajes",
+      "plan": "lowcost",
+      "masInfo": "https://goo.gl/maps/J6E4Q4G5aT52"
+    },
+    {
+      "latlng": {
+        "lat": 40.4114,
+        "lng": -3.6694
+      },
+      "title": "Parque Enrique Tierno Galván",
+      "info": "Un parque urbano con áreas verdes, un planetario y un cine IMAX.",
+      "image": "https://example.com/parque_enrique_tierno_galvan.jpg",
+      "category": "Naturaleza",
+      "plan": "gratis",
+      "masInfo": "https://goo.gl/maps/Z9F1kM3wV6J2"
+    },
+    {
+      "latlng": {
+        "lat": 40.4374,
+        "lng": -3.6923
+      },
+      "title": "Barrio de Malasaña",
+      "info": "Conocido por su ambiente alternativo, lleno de bares, tiendas vintage y cafeterías.",
+      "image": "https://example.com/barrio_malasana.jpg",
+      "category": "Ocio",
+      "plan": "lowcost",
+      "masInfo": "https://goo.gl/maps/N6K2Q3V9aP82"
+    },
+    {
+      "latlng": {
+        "lat": 40.4036,
+        "lng": -3.7003
+      },
+      "title": "Matadero Madrid",
+      "info": "Un antiguo matadero convertido en centro cultural con exposiciones, cine y teatro.",
+      "image": "https://example.com/matadero_madrid.jpg",
+      "category": "Ocio",
+      "plan": "gratis",
+      "masInfo": "https://goo.gl/maps/R2X4G9J8rW42"
+    },
+    {
+      "latlng": {
+        "lat": 40.4087,
+        "lng": -3.6994
+      },
+      "title": "Lavapiés",
+      "info": "Un barrio multicultural con una gran oferta de restaurantes internacionales, arte callejero y centros culturales.",
+      "image": "https://example.com/lavapies.jpg",
+      "category": "Gastronomía",
+      "plan": "lowcost",
+      "masInfo": "https://goo.gl/maps/K3Q5Y8J6aX62"
+    }
+]

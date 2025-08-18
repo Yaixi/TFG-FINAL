@@ -1,0 +1,97 @@
+[
+    {
+        "latlng": {
+            "lat": 40.4202,
+            "lng": -3.6983
+        },
+        "title": "El Respiro",
+        "info": "Tapas gratuitas y abundantes pagando la bebeida.",
+        "image": "https://guiadelocio.es/madrid/wp-content/uploads/sites/2/2023/07/el_respiro_1398855700.883.png",
+        "category": "Restauración",
+        "plan": "gratis",
+        "masInfo": "https://guiadelocio.es/madrid/plan/el-respiro/"
+    },
+    {
+        "latlng": {
+            "lat": 40.4867,
+            "lng": -3.3660
+        },
+        "title": "Taberna Alhambra",
+        "info": "Con cada bebida sirven tapas gratis que pueden incluir patatas bravas, jamón, queso, entre otros.",
+        "image": "https://th.bing.com/th/id/R.b14e8dee1b2775cccfe2034d5d2e1e0a?rik=Hyh4MNdv8UD5Mw&pid=ImgRaw&r=0",
+        "category": "Restauración",
+        "plan": "gratis",
+        "masInfo": "https://taberna-alhambra.es/"
+    },
+    {
+        "latlng": {
+            "lat": 40.4177,
+            "lng": -3.7074
+        },
+        "title": "Sidrería El Escarpín",
+        "info": "Sidrería asturiana que ofrece tapas generosas con cada consumición.",
+        "image": "https://th.bing.com/th/id/R.290fe92e32abdd5903f1746b5faab8f3?rik=mxIsyjrV0eGoSg&pid=ImgRaw&r=0",
+        "category": "Restauración",
+        "plan": "gratis",
+        "masInfo": "https://elescarpinsidreria.com/"
+    },
+        "latlng": {
+            "lat": 40.4270,
+            "lng": -3.7007
+        },
+        "title": "La Petisqueira",
+        "info": "Bar en La Latina que ofrece tapas gratis generosas con cada bebida comprada.",
+        "image": "https://th.bing.com/th/id/OIP.SbI06cSDbD8PMwSHFGqrDQHaFj?rs=1&pid=ImgDetMain",
+        "category": "Restauración",
+        "plan": "gratis",
+        "masInfo": "https://www.tripadvisor.es/Restaurant_Review-g187514-d3358830-Reviews-Petisqueira-Madrid.html"
+    },
+    {
+        "latlng": {
+            "lat": 40.4138,
+            "lng": -3.7079
+        },
+        "title": "Casa Revuelta",
+        "info": "Famoso por sus torreznos, que se sirven gratis con cada caña.",
+        "image": "https://th.bing.com/th/id/OIP.O47KIGaUeL7kWzyJo4Y-XAHaE0?rs=1&pid=ImgDetMain",
+        "category": "Restauración",
+        "plan": "gratis",
+        "masInfo": "https://www.casarevuelta.com/"
+    },
+    {
+        "latlng": {
+            "lat": 40.4192,
+            "lng": -3.7002
+        },
+        "title": "El Rincon Abulense",
+        "info": "Bar de tapas que ofrece generosas raciones con cada bebida.",
+        "image": "https://media-cdn.tripadvisor.com/media/photo-s/14/c8/d0/38/photo0jpg.jpg",
+        "category": "Restauración",
+        "plan": "gratis",
+        "masInfo": "https://www.tripadvisor.es/Restaurant_Review-g187514-d2169500-Reviews-El_Rincon_Abulense-Madrid.html"
+    },
+    {
+        "latlng": {
+            "lat": 40.4095,
+            "lng": -3.7077
+        },
+        "title": "Bar Santurce",
+        "info": "Famoso por sus sardinas a la plancha, que se sirven como tapas gratis con cada bebida.",
+        "image": "https://th.bing.com/th/id/R.d02677f022c771abed358df765d5cbea?rik=B%2bq31UNnlxt0BA&pid=ImgRaw&r=0",
+        "category": "Restauración",
+        "plan": "gratis",
+        "masInfo": "https://www.todobares.com/bar/bar-santurce-madrid/"
+    },
+    {
+        "latlng": {
+            "lat": 40.4251,
+            "lng": -3.6810
+        },
+        "title": "El Abuelo",
+        "info": "Famoso por sus gambas al ajillo, que se sirven gratis con cada bebida.",
+        "image": "https://th.bing.com/th/id/OIP.V7_-djjY0AMtCqwZ4zGt2QHaEK?rs=1&pid=ImgDetMain",
+        "category": "Restauración",
+        "plan": "gratis",
+        "masInfo": "https://www.todobares.com/bar/la-casa-del-abuelo-madrid/"
+    }
+]

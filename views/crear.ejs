@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='/stylesheets/style.css'/>
+    <% include header %>
+</head>
+
+<body>
+
+	<div id="Contenedor1">
+		<div style="text-align: center;">
+			<h2>¡Hola, <%= user.name %>!</h2>
+			<p>Esta es la pestaña <strong>Crear</strong>. Aquí podrás crear tus marcadores personalizados para organizar tus propios planes.</p>
+		</div>
+		<!-- 1. BOTÓN PARA ABRIR EL MODAL DE COMPARTIR -->
+        <div style="text-align: center; margin: 20px 0;">
+            <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#shareModal">
+                <i class="fas fa-share-alt"></i> Compartir Mi Mapa
+            </button>
+        </div>
+
+		<main id="main-content">
+			<div id="circle-container">
+			  <div class="circle" data-category="Restauración"><i class="fas fa-utensils"></i></div>
+			  <div class="circle" data-category="Viajes"><i class="fas fa-plane"></i></div>
+			  <div class="circle" data-category="Naturaleza"><i class="fas fa-tree"></i></div>
+			  <div class="circle" data-category="Deportes"><i class="fas fa-futbol"></i></div>
+			  <div class="circle" data-category="Ocio"><i class="fas fa-gamepad"></i></div>
+			  <div class="circle" data-category="Otro"><i class="fas fa-map-marker"></i></div>
+			</div>
+		  </main>
+		
+		<!-- MAPA -->
+		<div id="map-container" style="margin: 0 auto; width: 80%; border-radius: 10px; overflow: hidden;">
+			<div id="mapid" style="height: 800px;"></div>
+		</div>
+	</div>
+
+	<!-- JS - FILTRO CATEGORÍAS -->
+	<script>
+		let currentCategory = null;
+
+		document.querySelectorAll('.circle[data-category]').forEach(circle => {
+			circle.addEventListener('click', function() {
+				const category = this.getAttribute('data-category');
+
+				if (currentCategory === category) {
+					showAllMarkers();
+					currentCategory = null; 
+				} else {
+					showMarkersByCategory(category);
+					currentCategory = category; 
+				}
+			});
+		});
+
+		function showMarkersByCategory(category) {
+			markers.forEach(marker => {
+				const markerId = marker._leaflet_id;
+				const markerCategory = markerData[markerId].category;
+
+				if (markerCategory === category) {
+					mymap.addLayer(marker);
+				} else {
+					mymap.removeLayer(marker);
+				}
+			});
+		}
+
+		function showAllMarkers() {
+			markers.forEach(marker => {
+				mymap.addLayer(marker);
+			});
+		}
+		// ==========================================================
+// ========= INICIO: CÓDIGO DE FILTROS Y BÚSQUEDA =========
+// ==========================================================
+
+// Objeto que guarda el estado actual de todos los filtros
+const estadoFiltros = {
+    centroGeografico: null, // Guardará la latitud/longitud si se busca por zona
+    categorias: [],         // Un array con las categorías seleccionadas (ej: ['Restauración', 'Ocio'])
+    municipio: '',          // El nombre del municipio seleccionado
+    valoracion: 0           // La valoración mínima seleccionada (0, 1, 2, 3, 4, 5)
+};
+
+// Variables para los elementos visuales en el mapa
+let circuloBusqueda = null;
+let poligonoMunicipio = null;
+const RADIO_DE_BUSQUEDA = 1000; // Radio en metros para la búsqueda por zona
+
+// Función principal que configura todos los "escuchadores" de eventos para los filtros
+function configurarEventListeners() {
+  
+  // 1. Filtro de Búsqueda por Zona (Input y Botón)
+  document.getElementById('boton-buscar-zona').addEventListener('click', iniciarBusquedaGeografica);
+  document.getElementById('input-zona').addEventListener('keypress', (e) => { 
+      if (e.key === 'Enter') iniciarBusquedaGeografica(); 
+  });
+
+  // 2. Filtro de Categorías (los círculos)
+  document.querySelectorAll('.circle[data-category]').forEach(circle => {
+    circle.addEventListener('click', function () {
+      const category = this.dataset.category;
+      const icon = this.querySelector('i');
+      const isSelected = this.classList.toggle('selected'); // .toggle() simplifica la lógica
+      
+      const colorData = iconMapping[category] || iconMapping['sin asignar'];
+      const colorPorDefecto = { background: '#f0f0f0', icon: '#555', border: '#ddd' };
+
+      if (isSelected) {
+        // Seleccionar
+        icon.style.backgroundColor = colorData.color;
+        icon.style.color = 'white';
+        icon.style.borderColor = colorData.color;
+        estadoFiltros.categorias.push(category); // Añade la categoría al estado
+      } else {
+        // Deseleccionar
+        icon.style.backgroundColor = colorPorDefecto.background;
+        icon.style.color = colorPorDefecto.icon;
+        icon.style.borderColor = colorPorDefecto.border;
+        const index = estadoFiltros.categorias.indexOf(category);
+        if (index > -1) estadoFiltros.categorias.splice(index, 1); // Quita la categoría del estado
+      }
+      
+      // En cada cambio, se vuelven a aplicar todos los filtros
+      aplicarFiltros();
+    });
+  });
+
+  // 3. Filtro de Municipio (Menú desplegable)
+  document.getElementById('filtro-municipio').addEventListener('change', async (e) => {
+      const nombreMunicipio = e.target.value;
+      
+      // Limpia el polígono anterior si existe
+      if (poligonoMunicipio) mapa.removeLayer(poligonoMunicipio);
+      poligonoMunicipio = null;
+      
+      // Si el usuario selecciona "Todos los municipios"
+      if (!nombreMunicipio) {
+          estadoFiltros.municipio = '';
+          aplicarFiltros();
+          mapa.setView([40.41, -3.68], 13); // Centra el mapa de nuevo
+          return;
+      }
+
+      // Si se selecciona un municipio específico
+      estadoFiltros.municipio = nombreMunicipio;
+      try {
+          // Llama a la ruta del backend para obtener los límites geográficos
+          const response = await fetch(`/municipio-limites?nombre=${encodeURIComponent(nombreMunicipio)}`);
+          if (!response.ok) throw new Error('No se pudo obtener el polígono.');
+          
+          const data = await response.json();
+          // Dibuja el polígono del municipio en el mapa
+          poligonoMunicipio = L.geoJSON(data.geojson, { 
+              style: { color: "#ff7800", weight: 3, opacity: 0.65, fillOpacity: 0.1 } 
+          }).addTo(mapa);
+          mapa.fitBounds(poligonoMunicipio.getBounds()); // Hace zoom para que quepa el municipio
+      } catch (error) { 
+          console.error(error); 
+          alert('No se pudieron cargar los límites del municipio.'); 
+      } finally { 
+          // Se asegura de aplicar los filtros incluso si hay un error
+          aplicarFiltros(); 
+      }
+  });
+
+  // 4. Filtro de Valoración (Menú desplegable)
+  document.getElementById('filtro-valoracion').addEventListener('change', (e) => {
+      estadoFiltros.valoracion = Number(e.target.value); // Actualiza el estado
+      aplicarFiltros(); // Vuelve a aplicar todos los filtros
+  });
+  
+  // 5. Botón para Limpiar Todos los Filtros
+  document.getElementById('boton-limpiar-filtros').addEventListener('click', limpiarTodosLosFiltros);
+}
+
+
+// Función para buscar la ubicación geográfica introducida por el usuario
+async function iniciarBusquedaGeografica() {
+    const zona = document.getElementById('input-zona').value.trim().toLowerCase();
+    if (!zona) return; // No hace nada si está vacío
+
+    // Intenta buscar las coordenadas en el servicio de OpenStreetMap (Nominatim)
+    try {
+        const response = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(zona + ', Madrid, Spain')}&format=json&limit=1`);
+        const data = await response.json();
+
+        if (data.length > 0) {
+            const centro = L.latLng(parseFloat(data[0].lat), parseFloat(data[0].lon));
+            estadoFiltros.centroGeografico = centro; // Actualiza el estado con las coordenadas
+
+            // Dibuja un círculo en el mapa
+            if (circuloBusqueda) mapa.removeLayer(circuloBusqueda);
+            circuloBusqueda = L.circle(centro, {
+                radius: RADIO_DE_BUSQUEDA,
+                color: '#007bff',
+                fillColor: '#007bff',
+                fillOpacity: 0.2
+            }).addTo(mapa);
+
+            mapa.setView(centro, 16); // Centra el mapa en la ubicación
+            aplicarFiltros(); // Aplica filtros para mostrar marcadores dentro del círculo
+        } else {
+            alert('No se encontraron resultados para la ubicación introducida.');
+        }
+    } catch (error) {
+        console.error('Error al buscar ubicación:', error);
+        alert('Hubo un problema al buscar la ubicación.');
+    }
+}
+
+
+// La función más importante: filtra los marcadores según el objeto `estadoFiltros`
+function aplicarFiltros() {
+    // Empieza con la lista completa de marcadores
+    let marcadoresFiltrados = [...todosLosMarcadores];
+
+    // --- APLICACIÓN DE CADA FILTRO ---
+
+    // Filtro 1: Geográfico (prioriza municipio sobre zona)
+    if (poligonoMunicipio) {
+        marcadoresFiltrados = marcadoresFiltrados.filter(m => {
+            if (!m.leaflet_latlng) return false;
+            // Comprueba si el punto del marcador está dentro del polígono del municipio
+            const punto = { type: 'Point', coordinates: [m.leaflet_latlng.lng, m.leaflet_latlng.lat] };
+            // leaflet-pip es una librería que necesitarías para que esto funcione
+            return leafletPip.pointInLayer(punto, poligonoMunicipio, true).length > 0;
+        });
+    } else if (estadoFiltros.centroGeografico) {
+        marcadoresFiltrados = marcadoresFiltrados.filter(m => {
+            if (!m.leaflet_latlng) return false;
+            // Comprueba si la distancia del marcador al centro es menor que el radio
+            return estadoFiltros.centroGeografico.distanceTo(m.leaflet_latlng) <= RADIO_DE_BUSQUEDA;
+        });
+    }
+
+    // Filtro 2: Categorías
+    if (estadoFiltros.categorias.length > 0) {
+        marcadoresFiltrados = marcadoresFiltrados.filter(m => {
+            // Maneja el caso especial de la categoría "Gratis"
+            const categoriaDelMarcador = m.plan === 'gratis' ? 'Gratis' : m.category;
+            return estadoFiltros.categorias.includes(categoriaDelMarcador);
+        });
+    }
+
+    // Filtro 3: Valoración
+    if (estadoFiltros.valoracion > 0) {
+        marcadoresFiltrados = marcadoresFiltrados.filter(m => 
+            m.valoracionMedia >= estadoFiltros.valoracion
+        );
+    }
+
+    // Al final, llama a la función que pinta los resultados en el mapa y el slider
+    mostrarResultados(marcadoresFiltrados);
+}
+
+
+// Función para resetear todos los filtros y la vista
+function limpiarTodosLosFiltros() {
+    // 1. Resetea el objeto de estado
+    estadoFiltros.centroGeografico = null;
+    estadoFiltros.categorias = [];
+    estadoFiltros.municipio = '';
+    estadoFiltros.valoracion = 0;
+    
+    // 2. Limpia los campos del formulario HTML
+    document.getElementById('input-zona').value = '';
+    document.getElementById('filtro-municipio').value = '';
+    document.getElementById('filtro-valoracion').value = 0;
+    
+    // 3. Resetea el estilo de los círculos de categoría
+    document.querySelectorAll('.circle[data-category].selected').forEach(circle => {
+        circle.click(); // Simula un clic para deseleccionarlo y aplicar la lógica
+    });
+    
+    // 4. Elimina las formas geográficas del mapa
+    if (circuloBusqueda) mapa.removeLayer(circuloBusqueda);
+    if (poligonoMunicipio) mapa.removeLayer(poligonoMunicipio);
+    circuloBusqueda = null;
+    poligonoMunicipio = null;
+    
+    // 5. Aplica los filtros (que ahora están vacíos) para mostrar todo
+    aplicarFiltros();
+    
+    // 6. Restablece la vista del mapa y cierra el slider
+    mapa.setView([40.41, -3.68], 13);
+    cerrarSlider();
+}
+
+// ==========================================================
+// =========== FIN: CÓDIGO DE FILTROS Y BÚSQUEDA ============
+// ==========================================================
+	</script>
+	
+	<!-- CREAR PLAN -> OFFCANVAS -->
+	<button class="editarPlan" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasExample" aria-controls="offcanvasExample">
+		<i class="fas fa-edit"></i> EDITAR PLANES	
+	</button>
+
+	<div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasExample" aria-labelledby="offcanvasExampleLabel">
+		<div class="offcanvas-header">
+			<h5 class="offcanvas-title" id="offcanvasExampleLabel">Editor de planes</h5>
+			<button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+		</div>
+		<div class="offcanvas-body">
+			<h6>Selecciona un plan:</h6>
+			<div class="dropdown">
+				<button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+					Planes disponibles
+				</button>
+				<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+					<li><a class="dropdown-item" href="#" id="Restauración">Restauración</a></li>
+					<li><a class="dropdown-item" href="#" id="Viajes">Viajes</a></li>
+					<li><a class="dropdown-item" href="#" id="Naturaleza">Naturaleza</a></li>
+					<li><a class="dropdown-item" href="#" id="Deportes">Deportes</a></li>
+					<li><a class="dropdown-item" href="#" id="Ocio">Ocio</a></li>
+					<li><a class="dropdown-item" href="#" id="Otro">Otro</a></li>
+				</ul>
+			</div>
+			<button class="btn btn-danger mt-3" id="deleteAllPlansBtn">Eliminar todos los planes</button>
+			<p style="text-align: center; margin-top: 50px;"><strong>¿COMO PUEDO CREAR UN MARCADOR?</strong></p>
+			<p style= "margin-top: 20px;"><strong>1.</strong> Elije uno de los planes disponibles de la categoría que prefieras</p>
+			<p style="margin-top: 20px;"><strong>2.</strong> Cierrra esta pestaña y haz clic en el mapa donde quieras para colocar tu marcador (puedes poner tantos marcadores como quieras)</p>
+			<p style="margin-top: 20px;"><strong>3.</strong> Haz clic en tu nuevo marcador para editarlo</p>
+			<p style="margin-top: 20px;"><strong>4.</strong> Guarda tus cambios en el botón que aparece debajo del mapa "Confirmar cambios"</p>
+		</div>
+	</div>
+	
+	<!-- CONFIRMAR MARCADOR -->
+	<button class="btn btn-primary mt-3" id="confirmMarkerBtn" style="display: none;">Confirmar cambios</button>
+
+	<!-- SETUP DE MAPA Y MARCADORES -->
+	<script>
+
+		window.onload = function() {
+			loadMarkersFromDatabase();
+		};
+	
+	    var mymap = L.map('mapid').setView([40.41, -3.68], 13);
+
+		// mapa base (OpenStreetMap)
+		L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+			attribution: '© OpenStreetMap contributors'
+		}).addTo(mymap);
+
+		var markers = [];
+		var markerConfirmed = false; 
+		var planSelected = false;    
+		var markerData = {};
+
+		// Objeto para almacenar información de cada marcador
+		var markerData = {};
+
+	</script>
+
+	<!-- JS - CAMBIAR MAPA BASE -->
+	<script>
+		var baseMaps = {
+			"OpenStreetMap": L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+				attribution: '© OpenStreetMap contributors'
+			}),
+			"Google Maps": L.tileLayer('https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
+				maxZoom: 20,
+				subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+			}),
+			"CartoDB Voyager": L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png', {
+				attribution: '&copy; <a href="https://carto.com/attributions">CARTO</a>'
+			}),
+			"CartoDB Dark": L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png', {
+				attribution: '&copy; <a href="https://carto.com/attributions">CARTO</a>'
+			}),
+			//Para quien tenga MapBox que ponga su mapa
+			"Mapbox": L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
+				attribution: 'Map data &copy; <a href="https://www.mapbox.com/">Mapbox</a> contributors, ' +
+				'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+				maxZoom: 18,
+				id: 'mapbox/streets-v11',
+				tileSize: 512,
+				zoomOffset: -1,
+				accessToken: 'your.mapbox.access.token'
+			}),
+			"Mapbox Satellite": L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
+				attribution: 'Map data &copy; <a href="https://www.mapbox.com/">Mapbox</a> contributors, ' +
+				'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+				maxZoom: 18,
+				id: 'mapbox/satellite-v9',
+				tileSize: 512,
+				zoomOffset: -1,
+				accessToken: 'your.mapbox.access.token'
+			})
+		};
+
+		// Añadir control de capas al mapa
+		L.control.layers(baseMaps).addTo(mymap);
+
+		// Guardar la selección del mapa base
+		var selectedBaseMap = localStorage.getItem('selectedBaseMap');
+
+		if (selectedBaseMap) {
+		baseMaps[selectedBaseMap].addTo(mymap);
+		} else {
+		baseMaps["OpenStreetMap"].addTo(mymap);
+		}
+
+		mymap.on('baselayerchange', function (event) {
+		localStorage.setItem('selectedBaseMap', event.name);
+		});
+
+	</script>
+	
+	<!-- SCRIPT DE "CREAR NUEVO PLAN" y OFFCANVAS -->
+	<script>
+	
+		// CREAR MARCADOR AL HACER CLIC EN EL MAPA
+		function createNewMarker(latlng) {
+			if (!markerConfirmed) { 
+				var selectedPlan = document.querySelector('.dropdown-item.active').id;
+				var icon;
+				switch(selectedPlan) {
+					case "Restauración":
+						icon = L.divIcon({
+							className: 'custom-div-icon',
+							html: "<i id='markerR' class='fas fa-utensils'></i>",
+							iconSize: [30, 30],
+							iconAnchor: [15, 15]
+						});
+						break;
+					case "Viajes":
+						icon = L.divIcon({
+							className: 'custom-div-icon',
+							html: "<i id='markerV' class='fas fa-plane'></i>",
+							iconSize: [30, 30],
+							iconAnchor: [15, 15]
+						});
+						break;
+					case "Naturaleza":
+						icon = L.divIcon({
+							className: 'custom-div-icon',
+							html: "<i id='markerN' class='fas fa-tree'></i>",
+							iconSize: [30, 30],
+							iconAnchor: [15, 15]
+						});
+						break;
+					case "Deportes":
+						icon = L.divIcon({
+							className: 'custom-div-icon',
+							html: "<i id='markerD' class='fas fa-futbol'></i>",
+							iconSize: [30, 30],
+							iconAnchor: [15, 15]
+						});
+						break;
+					case "Ocio":
+						icon = L.divIcon({
+							className: 'custom-div-icon',
+							html: "<i id='markerO' class='fas fa-gamepad'></i>",
+							iconSize: [30, 30],
+							iconAnchor: [15, 15]
+						});
+						break;
+					case "Otro":
+						icon = L.divIcon({
+							className: 'custom-div-icon',
+							html: "<i id='markerOt' class='fas fa-location-dot'></i>",
+							iconSize: [30, 30],
+							iconAnchor: [15, 15]
+						});
+						break;
+					default:
+						icon = L.divIcon({
+							className: 'custom-div-icon',
+							html: "<i id='marker' class='fas fa-map-marker'></i>",
+							iconSize: [30, 30],
+							iconAnchor: [15, 15]
+						});
+				}
+				
+				var marker = L.marker(latlng, {icon: icon}).addTo(mymap);
+				markers.push(marker);
+				var markerId = marker._leaflet_id;
+				
+				markerData[markerId] = {
+					title: "",
+					image: "",
+					info: "",
+					category: selectedPlan
+				};
+				
+				marker.on('click', function() {
+					openMarkerModal(marker);
+				});
+			}
+		}
+		
+		// Gestionar la selección de plan en el menú desplegable de "Planes disponibles"
+		var dropdownItems = document.querySelectorAll('.dropdown-item');
+		dropdownItems.forEach(function(item) {
+			item.addEventListener('click', function() {
+				dropdownItems.forEach(function(item) {
+					item.classList.remove('active');
+				});
+				this.classList.add('active');
+				planSelected = true; // Se ha seleccionado un plan
+				markerConfirmed = false; // Se resetea la confirmación de marcador
+			});
+		});
+
+		// Solo crear marcadores si se ha confirmado un plan
+		mymap.on('click', function(e) {
+			if (planSelected && !markerConfirmed) { 
+				createNewMarker(e.latlng);
+			}
+		});
+
+		// (MOSTRAR) CONFIRMAR MARCADOR - BOTÓN - después de hacer clic en "Crear nuevo plan"
+		document.querySelector('[data-bs-target="#offcanvasExample"]').addEventListener('click', function() {
+			document.getElementById('confirmMarkerBtn').style.display = 'block'; 
+			planSelected = false; 
+		});
+		
+		// (OCULTAR) CONFIRMAR MARCADOR - BOTÓN
+		document.getElementById('confirmMarkerBtn').addEventListener('click', function() {
+			markerConfirmed = true;
+			document.getElementById('confirmMarkerBtn').style.display = 'none';
+			saveMarkersToDatabase(); 
+		});
+
+
+	    // ELIMINAR TODOS LOS PLANES
+		document.getElementById('deleteAllPlansBtn').addEventListener('click', async function() {
+			document.getElementById('deleteAllPlansBtn').addEventListener('click', function() {
+			var confirmation = confirm("¿Estás seguro de que quieres eliminar todos tus planes?");
+			if (confirmation) {
+				markers.forEach(function(marker) {
+					marker.remove();
+				});
+				// reseteo
+				markers = [];
+				markerData = {};
+				saveMarkersToDatabase(); 
+			}
+		});
+		await saveMarkersToDatabase(); 
+		});
+	
+	</script>
+		
+	<!-- EDITAR MARCADOR -->
+	<div class="modal fade" id="markerModal" tabindex="-1" aria-labelledby="markerModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="markerModalLabel">Editar Marcador</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<!-- Form para editar el marcador -->
+					<form>
+						<div class="mb-3">
+							<label for="markerTitle">Título:</label>
+							<input type="text" class="form-control" id="markerTitle">
+						</div>
+						<div class="mb-3">
+							<label for="markerImage">Imagen:</label>
+							<input type="file" class="form-control" id="markerImage" accept="image/*">
+							<small class="form-text text-muted">Selecciona una imagen del buscador de archivos.</small>
+							<div id="previewContainer" style="margin-top: 10px;">
+								<img id="imagePreview" src="" alt="Preview" style="max-width: 100%; max-height: 200px; display: none;">
+							</div>
+						</div>
+						<div class="mb-3">
+							<label for="markerInfo">Información:</label>
+							<textarea class="form-control" id="markerInfo" rows="3"></textarea>
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary" id="saveMarkerBtn">Guardar</button>
+					<button type="button" class="btn btn-danger" id="deleteMarkerBtn">Eliminar</button>
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<!-- SCRIPT - EDITAR MARCADOR -->
+	<script>
+
+		// Abrir un modal al hacer clic en un marcador
+		function openMarkerModal(marker) {
+			var markerId = marker._leaflet_id;
+			var markerInfo = markerData[markerId].info;
+			var markerTitle = markerData[markerId].title;
+			var markerImage = markerData[markerId].image;
+
+			document.getElementById('markerTitle').value = markerTitle;
+			document.getElementById('markerInfo').value = markerInfo;
+			document.getElementById('markerImage').value = "";
+
+			if (markerImage) {
+				document.getElementById('imagePreview').src = markerImage;
+				document.getElementById('imagePreview').style.display = 'block';
+			} else {
+				document.getElementById('imagePreview').style.display = 'none';
+			}
+
+			$('#markerModal').modal('show');
+			// Guardar la id del marcador actual
+			document.getElementById('saveMarkerBtn').setAttribute('data-marker-id', markerId);
+		}
+	
+	    // PARA VER LA IMAGEN 
+		document.getElementById('markerImage').addEventListener('change', function() {
+			var file = this.files[0];
+			if (file) {
+				var reader = new FileReader();
+				reader.onload = function(event) {
+					document.getElementById('imagePreview').src = event.target.result;
+					document.getElementById('imagePreview').style.display = 'block';
+            };
+			
+            reader.readAsDataURL(file);
+			
+			} 
+			else {
+            document.getElementById('imagePreview').style.display = 'none';
+			}
+		});
+	
+		// GUARDAR - BOTÓN
+		document.getElementById('saveMarkerBtn').addEventListener('click', async function() {
+			var markerId = this.getAttribute('data-marker-id');
+			markerData[markerId].title = document.getElementById('markerTitle').value;
+			// Cambiado para guardar la imagen como base64
+			var file = document.getElementById('markerImage').files[0];
+			if (file) {
+				var reader = new FileReader();
+				reader.onload = function(event) {
+					markerData[markerId].image = event.target.result;
+					 
+				};
+				reader.readAsDataURL(file);
+			} else {
+				saveMarkersToDatabase(); 
+			}
+			markerData[markerId].info = document.getElementById('markerInfo').value;
+			$('#markerModal').modal('hide');
+			saveMarkersToDatabase();
+		});
+
+		document.getElementById('saveMarkerBtn').addEventListener('click', async function() {
+			var markerId = this.getAttribute('data-marker-id');
+			markerData[markerId].title = document.getElementById('markerTitle').value;
+			// Cambiado para guardar la imagen como base64
+			var file = document.getElementById('markerImage').files[0];
+			if (file) {
+				var reader = new FileReader();
+				reader.onload = function(event) {
+					markerData[markerId].image = event.target.result;
+					markerData[markerId].info = document.getElementById('markerInfo').value; 
+					$('#markerModal').modal('hide');
+					saveMarkersToDatabase(); 
+				};
+				reader.readAsDataURL(file);
+			} else {
+				markerData[markerId].info = document.getElementById('markerInfo').value;
+				$('#markerModal').modal('hide');
+				saveMarkersToDatabase(); 
+			}
+		});
+
+		// ELIMINAR - BOTÓN
+		document.getElementById('deleteMarkerBtn').addEventListener('click', async function() {
+			var markerId = document.getElementById('saveMarkerBtn').getAttribute('data-marker-id');
+			var markerIndex = markers.findIndex(function(m) {
+				return m._leaflet_id === parseInt(markerId);
+			});
+			if (markerIndex !== -1) {
+				markers[markerIndex].remove();
+				markers.splice(markerIndex, 1);
+				delete markerData[markerId];
+				saveMarkersToDatabase(); 
+			}
+			$('#markerModal').modal('hide');
+		});
+
+	</script>
+	
+	<!-- GUARDAR Y CARGAR MARCADORES DE USUSARIO -->
+	<script>
+
+		// Guardar marcadores en la base de datos
+		async function saveMarkersToDatabase() {
+			const response = await fetch('/markers/save', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					markers: markers.map(marker => {
+						const markerId = marker._leaflet_id;
+						return {
+							latlng: marker.getLatLng(),
+							data: {
+								...markerData[markerId],
+								category: markerData[markerId].category,
+								title: markerData[markerId].title,
+								image: markerData[markerId].image, 
+								info: markerData[markerId].info
+							}
+						};
+					})
+				})
+			});
+			if (response.ok) {
+				console.log('Marcadores guardados con éxito');
+			} else {
+				console.error('Error al guardar los marcadores');
+			}
+		}
+
+		// Cargar marcadores desde la base de datos
+		async function loadMarkersFromDatabase() {
+			const response = await fetch('/markers/load');
+			if (response.ok) {
+				const savedMarkers = await response.json();
+				savedMarkers.forEach(marker => {
+					const icon = getIconByCategory(marker.data.category); 
+					const newMarker = L.marker(marker.latlng, { icon }).addTo(mymap);
+					markers.push(newMarker);
+					markerData[newMarker._leaflet_id] = marker.data;
+					
+					newMarker.on('click', function() {
+						openMarkerModal(newMarker);
+					});
+				});
+			} else {
+				console.error('Error al cargar los marcadores');
+			}
+		}
+
+
+		// Función para obtener el icono basado en la categoría
+		function getIconByCategory(category) {
+			let icon;
+			switch(category) {
+				case "Restauración":
+					icon = L.divIcon({
+						className: 'custom-div-icon',
+						html: "<i id='markerR' class='fas fa-utensils'></i>",
+						iconSize: [30, 30],
+						iconAnchor: [15, 15]
+					});
+					break;
+				case "Viajes":
+					icon = L.divIcon({
+						className: 'custom-div-icon',
+						html: "<i id='markerV' class='fas fa-plane'></i>",
+						iconSize: [30, 30],
+						iconAnchor: [15, 15]
+					});
+					break;
+				case "Naturaleza":
+					icon = L.divIcon({
+						className: 'custom-div-icon',
+						html: "<i id='markerN' class='fas fa-tree'></i>",
+						iconSize: [30, 30],
+						iconAnchor: [15, 15]
+					});
+					break;
+				case "Deportes":
+					icon = L.divIcon({
+						className: 'custom-div-icon',
+						html: "<i id='markerD' class='fas fa-futbol'></i>",
+						iconSize: [30, 30],
+						iconAnchor: [15, 15]
+					});
+					break;
+				case "Ocio":
+					icon = L.divIcon({
+						className: 'custom-div-icon',
+						html: "<i id='markerO' class='fas fa-gamepad'></i>",
+						iconSize: [30, 30],
+						iconAnchor: [15, 15]
+					});
+					break;
+				case "Otro":
+					icon = L.divIcon({
+						className: 'custom-div-icon',
+						html: "<i id='markerOt' class='fas fa-location-dot'></i>",
+						iconSize: [30, 30],
+						iconAnchor: [15, 15]
+					});
+					break;
+				default:
+					icon = L.divIcon({
+						className: 'custom-div-icon',
+						html: "<i id='marker' class='fas fa-map-marker'></i>",
+						iconSize: [30, 30],
+						iconAnchor: [15, 15]
+					});
+			}
+			return icon;
+		}
+
+		window.onload = function() {
+			loadMarkersFromDatabase();
+		};
+
+	</script>
+	<script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const copyButton = document.getElementById('copyLinkBtn');
+            if (copyButton) {
+                copyButton.addEventListener('click', () => {
+                    const linkInput = document.getElementById('shareLinkInput');
+                    linkInput.select();
+                    linkInput.setSelectionRange(0, 99999); // Para dispositivos móviles
+                    
+                    try {
+                        // Método moderno para copiar
+                        navigator.clipboard.writeText(linkInput.value);
+                        // Cambia el texto del botón temporalmente para dar feedback
+                        const originalText = copyButton.innerHTML;
+                        copyButton.innerHTML = '¡Copiado!';
+                        setTimeout(() => { copyButton.innerHTML = originalText; }, 2000);
+                    } catch (err) {
+                        // Método antiguo como fallback
+                        document.execCommand('copy');
+                        alert('¡Enlace copiado!');
+                    }
+                });
+            }
+        });
+		
+    </script>
+	<div class="modal fade" id="shareModal" tabindex="-1" aria-labelledby="shareModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="shareModalLabel">Comparte tu Mapa Público</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Copia este enlace para que cualquiera pueda ver tus marcadores.</p>
+                	<input type="text" class="form-control" value="https://tfg-xjc7.onrender.com" readonly id="shareLinkInput">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="copyLinkBtn"><i class="fas fa-copy"></i> Copiar Enlace</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+	
+
+</body>
+
+<% include footer %>
+</body>
+</html>

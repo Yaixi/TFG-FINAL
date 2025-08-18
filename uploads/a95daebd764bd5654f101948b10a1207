@@ -1,0 +1,135 @@
+[
+    {
+        "latlng": {
+            "lat": 40.4365,
+            "lng":-3.6623
+        },
+        "title": "Grand Match Sport Bar",
+        "info": "Salón de juegos con billares y bar",
+        "image": "https://www.granmadrid.com/img/sportsbar/sports-bar-1.jpg",
+        "category": "Deportes",
+	"plan": "normal",
+        "masInfo": "https://unbuendiaenmadrid.com/gran-match-sala-de-juegos/",
+	"precio": "4"
+    },
+    {
+        "latlng": {
+            "lat": 40.4384,
+            "lng":-3.6764
+        },
+        "title": "Sala del arte Joven",
+        "info": "Espacio de referencia dentro de la creación artística contemporánea con exposiciones y actividades",
+        "image": "https://www.comunidad.madrid/sites/default/files/styles/colorbox_modal/public/100tono9_0.jpg?itok=GsJVhALh",
+        "category": "Ocio",
+	"plan": "gratis",
+        "masInfo": "https://www.comunidad.madrid/centros/sala-arte-joven"
+	
+    },
+    {
+        "latlng": {
+            "lat": 40.4877,
+            "lng":-3.3640
+        },
+        "title": "Palacete de Laredo",
+        "info": "Palacio neomudéjar y actual sede del Museo Cisneriano (Patrimonio Histórico)",
+        "image": "https://www.madrid.org/monumentoscercanias/images/palacio-laredo-3_2009_02_22_5938-2009.jpg",
+        "category": "Viajes",
+	"plan": "gratis",
+        "masInfo": "https://www.turismoalcala.es/turismo/museo-palacio-laredo/"
+	
+    },
+    {
+        "latlng": {
+            "lat": 40.4715,
+            "lng":-3.4421	
+        },
+        "title": "SpeedPark Oasiz Torrejón",
+        "info": "Actividades de karting, bolos, laser-tag, karaoke, billar y recreativos",
+        "image": "https://lh5.googleusercontent.com/p/AF1QipPGz7ZYiEXqhvyaN_sVr_54b0B4nVrYcDcyQzaM=w408-h272-k-no",
+        "category": "Ocio",
+	"plan": "normal",
+        "masInfo": "http://www.speedpark.es/",
+	"precio": "15"
+    },
+    {
+        "latlng": {
+            "lat": 40.4187,
+            "lng":-3.7024	
+        },
+        "title": "Pasaje del comercio",
+        "info": "Pasaje comercial con muchos sitios para comer a buen precio",
+        "image": "https://lh5.googleusercontent.com/p/AF1QipNkGBFXhvg-DHi91gfIhRsS2_wJ6090xorqw41o=w408-h435-k-no",
+        "category": "Restauración",
+	"plan": "normal",
+        "masInfo": "http://www.galipanspain.es/",
+	"precio": "8"
+    },
+    {
+        "latlng": {
+            "lat": 40.4196,
+            "lng":-3.7077	
+        },
+        "title": "Wok King",
+        "info": "Restaurante de comida china",
+        "image": "https://lh5.googleusercontent.com/p/AF1QipO4bW9hMrmGb56Zb-WAJ5G23CPXZ4lghSTWaeFi=w408-h306-k-no",
+        "category": "Restauración",
+	"plan": "normal",
+        "masInfo": "https://www.tripadvisor.es/Restaurant_Review-g187514-d10821163-Reviews-Wok_King-Madrid.html",
+	"precio": "10"
+    },
+    {
+        "latlng": {
+            "lat": 40.4201, 
+            "lng":-3.7141
+        },
+        "title": "Jardines de Sabatini",
+        "info": "jardín real y sala de eventos",
+        "image": "https://images.mnstatic.com/a6/b1/a6b18ef7fd99cad244d306869fa210f6.jpg?quality=75&format=pjpg&fit=bounds&width=980&height=880",
+        "category": "Naturaleza",
+	"plan": "gratis",
+        "masInfo": "https://www.esmadrid.com/informacion-turistica/jardines-de-sabatini"
+
+    },
+    {
+        "latlng": {
+            "lat": 40.4116,  
+            "lng":-3.7100	
+        },
+        "title": "La Buha",
+        "info": "tapas y raciones en una vinoteca. Buena relación calidad precio. No es tan barato pero mira que tortillas...",
+        "image": "https://i0.wp.com/quehacerhoyenmadrid.com/wp-content/uploads/2019/03/WhatsApp-Image-2019-03-17-at-12.png?fit=1600%2C900&ssl=1",
+        "category": "Gastronomía",
+	"plan": "normal",
+        "masInfo": "https://tabernaselbuo.eu/galeriabuhalatinaes-110-tortillas-rellenas",
+        "precio": "20"
+
+    },
+    {
+        "latlng": {
+            "lat": 40.4717,  
+            "lng":-3.6816	
+        },
+        "title": "Rolling Dance & Burger",
+        "info": "Hamburguesería en la Estación de Chamartín con pista de patinaje",
+        "image": "https://th.bing.com/th/id/R.8dba9c6c6ce3164eb1ab85343f6ba5c3?rik=X0Ynv1rDKCBipw&pid=ImgRaw&r=0",
+        "category": "Deporte",
+	"plan": "normal",
+        "masInfo": "https://www.rollingdance.com/",
+        "precio": "22"
+
+    },
+    {
+        "latlng": {
+            "lat": 40.3396,  
+            "lng":-3.8474	
+        },
+        "title": "Ozone Bowling Alcorcón",
+        "info": "Bolera con bar",
+        "image": "https://lh5.googleusercontent.com/p/AF1QipNSFee6P10zk5LerYpaEEw0xpbPsbOpVfPdhqDu=w408-h272-k-no",
+        "category": "Deporte",
+	"plan": "normal",
+        "masInfo": "https://th.bing.com/th/id/OIP.wEYb8WSvSWvjlyzjDXH7YwHaEJ?rs=1&pid=ImgDetMain",
+        "precio": "10"
+
+    }
+]

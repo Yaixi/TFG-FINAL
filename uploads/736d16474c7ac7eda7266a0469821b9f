@@ -1,0 +1,12 @@
+    {
+        "latlng": {
+            "lat": 40.4182,
+            "lng": -3.6965
+        },
+        "title": "Círculo de Bellas Artes",
+        "info": "Uno de los centros culturales privados más importantes de Europa, con exposiciones, cine y una azotea con vistas panorámicas",
+        "image": "https://d1bvpoagx8hqbg.cloudfront.net/originals/se-respira-magia-c0adff6e8ff3bd8389a0e3b7dcb21dd9.jpg",
+        "category": "Ocio",
+	"plan": "gratis",
+        "masInfo": "https://www.circulobellasartes.com/",
+    }

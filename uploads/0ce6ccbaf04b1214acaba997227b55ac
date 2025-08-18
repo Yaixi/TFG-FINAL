@@ -1,0 +1,126 @@
+[
+    {
+        "latlng": {
+            "lat": "40.3531",
+            "lng": "-3.8066" 
+        },
+        "title": "Museo de Arte en Vidrio de Alcorcón",
+        "info": "Entrada gratuita a todas las exposiciones de arte en vidrio contemporáneo del museo ubicado dentro del Castillo de Valderas de Alcorcón.",
+        "image": "https://www.mava.es/sites/default/files/styles/image_text_50/public/2022-11/DSC_0113.JPG.webp?itok=B5v99-Mg",
+        "category": "Ocio",
+        "plan": "gratis",
+        "masInfo": "https://www.mava.es/"
+    },
+    {
+        "latlng": {
+            "lat": "40.3449",
+            "lng": "-3.8351" 
+        },
+        "title": "Teatro Buero Vallejo",
+        "info": "Teatro con una variedad de obras, talleres y festivales a precios económicos.",
+        "image": "https://www.ayto-alcorcon.es/sites/default/files/styles/mobile_half_slide/public/2022-03/buero%20vallejo_0.jpg.webp?itok=MJCaOBXE",
+        "category": "Ocio",
+        "plan": "normal",
+        "masInfo": "https://www.ayto-alcorcon.es/es/servicios/cultura#agenda-cultural",
+        "precio": "10.0"
+    },
+    {
+        "latlng": {
+            "lat": "40.3979",
+            "lng": "-3.6555" 
+        },
+        "title": "Cerro del Tío Pío o Parque de las Siete Tetas",
+        "info": "Parque ubicado en el barrio de Numancia donde disfrutar de increíbles vistas y atardeceres.",
+        "image": "https://offloadmedia.feverup.com/madridsecreto.co/wp-content/uploads/2024/02/02130722/parque-de-las-siete-tetas-1024x683.jpg",
+        "category": "Naturaleza",
+        "plan": "gratis",
+        "masInfo": "https://es.m.wikipedia.org/wiki/Cerro_del_T%C3%ADo_P%C3%ADo"
+    },
+    {
+        "latlng": {
+            "lat": "40.4558",
+            "lng": "-3.5991" 
+        },
+        "title": "Jardín El Capricho de la Alameda de Osuna",
+        "info": "Fantásticos jardines llenos de historia donde poder disfrutar al aire libre.",
+        "image": "https://media.traveler.es/photos/61375dc6bae07f0d8a492078/master/w_1600%2Cc_limit/220209.jpg",
+        "category": "Naturaleza",
+        "plan": "gratis",
+        "masInfo": "https://www.madrid.es/portales/munimadrid/es/Inicio/El-Ayuntamiento/Parques-y-jardines/Patrimonio-Verde/Parques-en-Madrid/Jardin-         historico-El-Capricho-de-la-Alameda-Osuna/?vgnextfmt=default&vgnextoid=9db6fb010e99e210VgnVCM1000000b205a0aRCRD&vgnextchannel=38bb1914e7d4e210VgnVCM1000000b205a0aRCRD"
+    },
+    {
+        "latlng": {
+            "lat": "40.4237",
+            "lng": "-3.7146" 
+        },
+        "title": "Museo Cerralbo",
+        "info": "Ubicado en lo que fue la casa-palacio del XVII Marqués de Cerralbo. Viaje a fianales del siglo XIX por solo 3 euros (entrada general) o gratis los domingos, o los jueves de 17:00h a 20:00h. Gratuito para todos los jóvenes estudiantes hasta 25 años o que dispongan de Carné Joven.",
+        "image": "https://www.investigart.com/wp-content/uploads/2015/01/33-salon-de-baile-cc.jpg",
+        "category": "Ocio",
+        "plan": "normal",
+        "masInfo": "https://www.cultura.gob.es/mcerralbo/home.html"
+        "precio": "3.0"
+    },
+    {
+        "latlng": {
+            "lat": "40.4232",
+            "lng": "-3.6887"
+        },
+        "title": "Museo Arqueológico Nacional",
+        "info": "Visita estándar al museo arqueológico nacional por 3 euros. Gratuito los sábados a partir de las 14:00h y los domingos por la mañana. Gratuito siempre para jóvenes hasta 25 años y jóvenes con Carné Joven.",
+       "image": "https://madridando.com/wp-content/uploads/2018/08/museo-arqueol%C3%B3gico-nacional.jpeg",
+        "category": "Ocio",
+        "plan": "normal",
+        "masInfo": "https://www.man.es/man/home.html"
+        "precio": "3.0"
+    },
+    {
+        "latlng": {
+            "lat": "40.4203",
+            "lng": "-3.7017"
+        },
+        "title": "Exposiciones gratuitas en Espacio Fundación Telefónica",
+        "info": "Exposiciones de distintas temáticas gratis a lo largo de todo el año en el Espacio Fundación Telefónica.",
+        "image": "https://en.fundaciontelefonica.com/wp-content/uploads/2020/04/espacio-fundacion-telefonica-madrid-2560x950.jpg",
+        "category": "Ocio",
+        "plan": "gratis",
+        "masInfo": "https://espacio.fundaciontelefonica.com/agenda/exposiciones/"
+    },
+    {
+        "latlng": {
+            "lat": "40.0363",
+            "lng": "-3.6090" 
+        },
+        "title": "Palacio Real de Aranjuez",
+        "info": "Visita el fantástico Palacio Real de Aranjuez por solo 9 euros la entrada general, jóvenes hasta 25 años por 4 euros. Visita gratis los miércoles y domingos de 15:00h a 18:00h.",
+        "image": "https://fotografias.lasexta.com/clipping/cmsimages02/2022/06/25/8FF59491-458E-4D2B-80C0-90363EDA2824/descubre-palacio-aranjuez-traves-estas-curiosidades_98.jpg?crop=1920,1080,x0,y0&width=1900&height=1069&optimize=high&format=webply",
+        "category": "Viajes",
+        "plan": "normal",
+        "masInfo": "https://tickets.patrimonionacional.es/es/tickets/palacio-aranjuez"
+        "precio": "9.0"
+    },
+    {
+        "latlng": {
+            "lat": "40.0391",
+            "lng": "-3.5924"
+        },
+        "title": "Jardín del Príncipe",
+        "info": "Pasea por el Jardín del Príncipe en Aranjuez completamente gratis.",
+        "image": "https://www.jardindelprincipe.com/wp-content/uploads/2015/05/estanque-chinesco-jardin-del-principe.jpg",
+        "category": "Naturaleza",
+        "plan": "gratis",
+        "masInfo": "https://www.patrimonionacional.es/visita/palacio-real-de-aranjuez/espacios/jardin-del-principe"
+    },
+    {
+        "latlng": {
+            "lat": "40.9934",
+            "lng": "-3.6363"
+        },
+        "title": "Museo Picasso - Colección Eugenio Arias",
+        "info": "Visita el museo Picasso en Buitrago del Lozoya y todas las exposiciones y talleres que ofrece el museo de forma gratuita.",
+        "image": "https://www.sierranortemadrid.org/wp-content/uploads/2019/03/MUSEO-PICASSO-Buitragow.jpg",
+        "category": "Ocio",
+        "plan": "gratis",
+        "masInfo": "https://www.comunidad.madrid/centros/museo-picasso-coleccion-eugenio-arias#panel-41251"
+    }
+]

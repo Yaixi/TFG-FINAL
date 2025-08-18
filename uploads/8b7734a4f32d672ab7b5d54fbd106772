@@ -1,0 +1,120 @@
+[
+    {
+        "latlng": {
+            "lat": 40.4274,
+            "lng": -3.6938
+        },
+        "title": "Academia de Cine Español",
+        "info": "Academia de las Artes y las Ciencias Cinematográficas",
+        "image": "https://www.academiadecine.com/wp-content/uploads/2021/10/Sala-de-cine-de-la-Academia-Foto-Sonia-Aguilera.jpg",
+	"category": "Ocio",
+	"plan": "gratis",
+	"masInfo": "https://www.academiadecine.com/"
+    },
+    {
+        "latlng": {
+            "lat": 40.4215,
+            "lng": -3.7002
+        },
+        "title": "Takomama",
+        "info": "Restaurante de cocina mexicana",
+        "image": "https://takomama.net/wp-content/uploads/2023/05/TAKOMAMA-TAKOS.png",
+	"category": "Restauración",
+	"plan": "normal",
+	"masInfo": "https://takomamamadrid.es/",
+	"precio": "8"
+    },
+    {
+        "latlng": {
+            "lat": 40.4239,
+            "lng": -3.7177
+        },
+        "title": "Templo de Debod",
+        "info": "Antiguo monumento egipcio",
+        "image": "https://www.tripsavvy.com/thmb/MT2lc4-kgMS9_fspyaT5w9lr-_8=/1500x997/filters:fill(auto,1)/MadridTempleofDebod2-5c38769346e0fb00015d6379.jpg",
+	"category": "Naturaleza",
+	"plan": "gratis",
+	"masInfo": "https://es.wikipedia.org/wiki/Templo_de_Debod"
+    },
+    {
+        "latlng": {
+            "lat": 40.4157,
+            "lng": -3.7336
+        },
+        "title": "Polideportivo Municipal Casa de Campo",
+        "info": "Polideportivo con varias piscinas, gimnasios y una piscina exterior con zonas de césped a la sombra",
+        "image": "https://th.bing.com/th/id/OIP.vlEgFK-lJYHakgb2qp_D8AHaEK?rs=1&pid=ImgDetMain",
+	"category": "Deportes",
+	"masInfo": "https://www.madrid.es/portales/munimadrid/es/Inicio/El-Ayuntamiento/Equipamientos-deportivos/Centros-deportivos-/Principales-unidades-deportivas/Piscinas-aire-libre/Centro-Deportivo-Municipal-Casa-de-Campo/?vgnextoid=3876b0c40971c010VgnVCM1000000b205a0aRCRD&vgnextchannel=5a29fcbe50a9f310VgnVCM2000000c205a0aRCRD",
+	"precio": "15"
+    },
+    {
+        "latlng": {
+            "lat": 40.4152,
+            "lng": -3.6835
+        },
+        "title": "Parque del Retiro",
+        "info": "Un amplio y hermoso parque donde puedes disfrutar de un paseo, hacer un picnic o alquilar una barca en el estanque",
+        "image": "https://img.bekiaviajes.com/articulos/portada/75000/75834-h.jpg",
+	"category": "Naturaleza",
+	"masInfo": "https://www.esmadrid.com/informacion-turistica/parque-del-retiro"
+    },
+    {
+        "latlng": {
+            "lat": 40.4154,
+            "lng": -3.7089
+        },
+        "title": "Mercado de San Miguel",
+        "info": "Un mercado histórico donde puedes probar tapas y otros alimentos gourmet",
+        "image": "https://turismo.eurodicas.com.br/wp-content/uploads/2019/08/mercado-de-san-miguel-em-madrid.jpg",
+	"category": "Restauración",
+	"masInfo": "https://mercadodesanmiguel.es/",
+	"precio": "20"
+    },
+    {
+        "latlng": {
+            "lat": 40.3964,
+            "lng": -3.7065
+        },
+        "title": "Madrid río",
+        "info": "Enclave lúdico y cultural paralelo al río Manzanares",
+        "image": "https://madrides.es/fr/wp-content/uploads/sites/6/2017/04/4-The-beach-of-Madrid.jpg",
+	"category": "Naturaleza",
+	"masInfo": "https://www.esmadrid.com/informacion-turistica/madrid-rio"
+    },
+    {
+        "latlng": {
+            "lat": 40.4253,
+            "lng": -3.7252
+        },
+        "title": "Casa de Campo",
+        "info": "El mayor parque público de Madrid, ideal para practicar deportes, caminar o visitar el zoológico y el parque de atracciones",
+        "image": "https://www.guiarepsol.com/content/dam/repsol-guia/contenidos-imagenes/viajar/con-ninos/excursion-la-casa-de-campo-madrid/gr-cms-media-featured_images-none-7d89ef2b-5642-4677-8913-f0e36c72aad8-07casa-de-campo-10.jpg",
+	"category": "Naturaleza",
+	"masInfo": "https://www.esmadrid.com/informacion-turistica/casa-de-campo"
+    },
+    {
+        "latlng": {
+            "lat": 40.4182,
+            "lng": -3.6965
+        },
+        "title": "Círculo de Bellas Artes",
+        "info": "Uno de los centros culturales privados más importantes de Europa, con exposiciones, cine y una azotea con vistas panorámicas",
+        "image": "https://d1bvpoagx8hqbg.cloudfront.net/originals/se-respira-magia-c0adff6e8ff3bd8389a0e3b7dcb21dd9.jpg",
+	"category": "Ocio",
+	"masInfo": "https://www.circulobellasartes.com/",
+	"precio": "gratis"
+    },
+    {
+        "latlng": {
+            "lat": 40.4136,
+            "lng": -3.6921
+        },
+        "title": "Museo del Prado",
+        "info": "La entrada al Museo del Prado es gratuita en los siguientes horarios: De lunes a sábado: de 18:00 a 20:00 horas. Domingos y festivos: de 17:00 a 19:00 horas.",
+        "image": "https://imgcdn.bokun.tools/307c67f3-fcd9-4d32-86a0-546a2a43f975.jpeg?1623188688",
+	"category": "Ocio",
+	"masInfo": "https://www.museodelprado.es/",
+	"precio": "gratis"
+    }
+]

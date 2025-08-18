@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title><%= title %></title>
+</head>
+<body>
+  <div id="Contenedor1">
+    <h1 class="admin">PÁGINA DEL ADMIN - YAIZA Y MARCOS</h1>
+
+    <p style="width: 800px; text-align: center; margin-top: 12%; margin-left: 27%; height: 0%;">Esta es la página del administardor. Aquí, solo los usuarios con la propiedad <strong>isAdmin:true</strong> podrán acceder. En ella, los administradores pueden actualizar el mapa interactivo de la página prinipal. Usa "Elegir archivo" para subir un .json con la información actualizada de todos los planes y después "Upload JSON" para actualizar la base de datos en MongoDB Atlas</p>
+
+    <div class="d-flex justify-content-center align-items-center" style="width: 90%; margin-left: 35%; position: relative; margin-top: 10%;">
+      <div class="json">
+        <form id="uploadForm" enctype="multipart/form-data">
+          <input type="file" id="jsonFile" name="jsonFile" accept=".json">
+          <button type="submit">Upload JSON</button>
+        </form>
+      </div>
+    </div>
+  
+    <div class="buttons" style="width: 100%; margin-left: 42%; position: relative; margin-top: 2%;">
+      <a href="/xml" class="Boton">Marcadores XML</a>
+      <a href="/json" class="Boton">Marcadores JSON</a>
+    </div>
+  </div>
+
+  <a href="/" class="Volver">Volver a la página principal</a>
+
+  <script>
+    document.getElementById('uploadForm').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const fileInput = document.getElementById('jsonFile');
+      const formData = new FormData();
+      formData.append('jsonFile', fileInput.files[0]);
+
+      const response = await fetch('/admin/upload-json', {
+        method: 'POST',
+        body: formData
+      });
+
+      if (response.ok) {
+        alert('Marcadores añadidos correctamente a la BD');
+      } else {
+        alert('Error añadiendo los marcadores');
+      }
+    });
+  </script>
+
+</body>
+</html>
+
+<style>
+
+  :root {
+      --clr-primary: #14273e;
+      --clr-secondary: #ffeba7;
+      --bg-primary: #0d1a2d;
+      --bg-secondary: #14273e;
+      --text-primary: #ccc;
+      --text-secondary: #0d1a2d;
+    }
+    
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+    
+    * {
+      margin: 0;
+      font: inherit;
+    }
+    
+    html {
+      color-scheme: dark;
+    }
+    
+    @import url('https://fonts.googleapis.com/css?family=Poppins:400,500,600,700,800,900');
+    body{
+      font-family: 'Poppins', sans-serif;
+      min-height: 100vh;
+      background-image: url('https://images.unsplash.com/photo-1531370356290-5892e5dce3b7?q=80&w=2077&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
+      background-size: cover;
+      background-position: center;
+      color: var(--text-primary);
+      padding: 1%;
+    }
+
+    /* Contenedor principal */
+    #Contenedor1 {
+      background: rgba(13, 26, 45, 0.5); /* Opacidad 0.5 = 50% */
+      height: 890px;
+      padding: 50px;
+      border-radius: 10px;
+      backdrop-filter: blur(10px); 
+      background-size: cover;
+      background-position: center;
+    }
+    
+    .admin {
+      position: absolute;
+      top: 20%; 
+      left: 50%; 
+      transform: translateX(-50%); 
+      font-size: 36px; 
+      color: transparent; 
+      -webkit-text-stroke: 1px #ffeba7; 
+    }
+    
+    /* volver boton */
+    .Volver{
+      text-decoration: none;
+      padding: 0.8em 1.8em;
+      border-radius: 8px;
+      background-color: transparent;
+      color:#ffeba7;
+      border:2px solid #ffeba7;
+      font-size: 16px;
+      cursor: pointer;
+      z-index: 1;
+      transition: 0.3s;
+
+      position: absolute;
+      top: 70%; 
+      left: 50%; 
+      transform: translate(-50%, -50%); 
+      height: 100px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
+    
+    .Volver:before{
+      content:'';
+      width: 0;
+      height: 300%;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transition: 0.5s ease;
+      transform: translate(-50%,-50%) rotate(45deg);
+      display: block;
+      z-index: -1;
+      background-color: #ffeba7;
+    }
+    .Volver:hover::before{
+      width: 105%;
+    }
+    .Volver:hover{
+      color:#111;
+    }
+    
+  </style>
+  

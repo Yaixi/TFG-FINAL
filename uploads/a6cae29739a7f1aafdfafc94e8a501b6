@@ -1,0 +1,63 @@
+[
+    {
+        "latlng": {
+            "lat": 40.4154,
+            "lng": -3.7074
+        },
+        "title": "Mercado de San Miguel",
+        "info": "Un mercado histórico donde puedes probar tapas y otros alimentos gourmet",
+        "image": "https://turismo.eurodicas.com.br/wp-content/uploads/2019/08/mercado-de-san-miguel-em-madrid.jpg",
+        "category": "Restauración",
+	"plan": "normal",
+        "masInfo": "https://mercadodesanmiguel.es/",
+        "precio": "20"
+    },
+    {
+        "latlng": {
+            "lat": 40.3964,
+            "lng": -3.7065
+        },
+        "title": "Madrid río",
+        "info": "Enclave lúdico y cultural paralelo al río Manzanares",
+        "image": "https://madrides.es/fr/wp-content/uploads/sites/6/2017/04/4-The-beach-of-Madrid.jpg",
+        "category": "Naturaleza",
+		"plan": "gratis",
+        "masInfo": "https://www.esmadrid.com/informacion-turistica/madrid-rio"
+    },
+    {
+        "latlng": {
+            "lat": 40.4253,
+            "lng": -3.7252
+        },
+        "title": "Casa de Campo",
+        "info": "El mayor parque público de Madrid, ideal para practicar deportes, caminar o visitar el zoológico y el parque de atracciones",
+        "image": "https://www.guiarepsol.com/content/dam/repsol-guia/contenidos-imagenes/viajar/con-ninos/excursion-la-casa-de-campo-madrid/gr-cms-media-featured_images-none-7d89ef2b-5642-4677-8913-f0e36c72aad8-07casa-de-campo-10.jpg",
+        "category": "Naturaleza",
+	"plan": "gratis",
+        "masInfo": "https://www.esmadrid.com/informacion-turistica/casa-de-campo"
+    },
+    {
+        "latlng": {
+            "lat": 40.4182,
+            "lng": -3.6965
+        },
+        "title": "Círculo de Bellas Artes",
+        "info": "Uno de los centros culturales privados más importantes de Europa, con exposiciones, cine y una azotea con vistas panorámicas",
+        "image": "https://d1bvpoagx8hqbg.cloudfront.net/originals/se-respira-magia-c0adff6e8ff3bd8389a0e3b7dcb21dd9.jpg",
+        "category": "Ocio",
+	"plan": "gratis",
+        "masInfo": "https://www.circulobellasartes.com/",
+    },
+    {
+        "latlng": {
+            "lat": 40.4136,
+            "lng": -3.6921
+        },
+        "title": "Museo del Prado",
+        "info": "La entrada al Museo del Prado es gratuita en los siguientes horarios: De lunes a sábado: de 18:00 a 20:00 horas. Domingos y festivos: de 17:00 a 19:00 horas.",
+        "image": "https://imgcdn.bokun.tools/307c67f3-fcd9-4d32-86a0-546a2a43f975.jpeg?1623188688",
+        "category": "Ocio",
+	"plan": "gratis",
+        "masInfo": "https://www.museodelprado.es/",
+    }
+]
