@@ -1,6 +1,9 @@
 <!doctype html>
 <html lang="es">
 <head>
+    <!-- ===== AÑADIDO: Etiqueta esencial para el diseño en móviles ===== -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
     <title><%= title %></title>
     <!-- Incluye aquí tus CSS principales y los de Leaflet -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
@@ -151,6 +154,46 @@
     #close-panel-btn { background-color: #6c757d; color: white; }
     #reset-route-btn { background-color: #dc3545; color: white; }
     #panel-reset-view p { text-align: center; color: #666; margin-top: 10px; }
+
+    /* ===== AÑADIDO: Estilos para Móviles ===== */
+    @media (max-width: 768px) {
+        /* Ajusta el contenedor de introducción */
+        #Contenedor1 {
+            padding: 10px;
+        }
+
+        /* Ajusta el contenedor del mapa para que ocupe más ancho */
+        #map-container {
+            width: 100%;
+            height: 75vh; /* Usa un porcentaje de la altura de la pantalla */
+            margin: 10px 0;
+            border-radius: 0;
+            border-left: none;
+            border-right: none;
+        }
+
+        /* Reposiciona el panel de filtros como una capa superior */
+        #panel-filtros {
+            width: calc(100% - 20px); /* Casi todo el ancho */
+            left: 10px; /* Centrado con un pequeño margen */
+            right: 10px;
+            top: 10px;
+            max-height: 80vh; /* Límite de altura para que se pueda hacer scroll dentro */
+        }
+
+        /* Ajusta el panel de rutas también */
+        #custom-route-panel {
+            width: calc(100% - 20px);
+            left: 10px;
+            right: 10px;
+            top: 10px;
+        }
+
+        /* Ajusta el panel lateral de resultados */
+        #popup-slider {
+            width: 90%;
+        }
+    }
   </style>
 
   <!-- SCRIPTS EXTERNOS -->
