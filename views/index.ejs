@@ -1,11 +1,8 @@
 <!doctype html>
 <html lang="es">
 <head>
-    <!-- ===== AÑADIDO: Etiqueta esencial para el diseño en móviles ===== -->
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= title %></title>
-    <!-- Incluye aquí tus CSS principales y los de Leaflet -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" />
@@ -78,33 +75,64 @@
     <div id="mapid"></div>
 
     <div id="custom-route-panel" class="hidden">
-        <div id="panel-search-view">
-            <h4>Calcular Ruta</h4>
-            <div class="form-group"><label for="route-start">Origen:</label><input type="text" id="route-start" placeholder="Escribe o haz clic derecho..."></div>
-            <div class="form-group"><label for="route-end">Destino:</label><input type="text" id="route-end" disabled></div>
-            <div class="form-group">
-                <label for="route-profile">Modo de Transporte:</label>
-                <select id="route-profile">
-                    <option value="car">🚗 Coche</option>
-                    <option value="foot">🚶 A pie</option>
-                    <option value="bike">🚴 Bici</option>
-                </select>
-            </div>
-            <button id="create-route-btn">Crear Ruta</button>
-            <button id="close-panel-btn">Cancelar</button>
+   <!-- Botón de colapsar -->
+<button id="toggle-panel-btn" style="
+    position: absolute;
+    top: 250px;
+    right: -30px;
+    background: #f8f9fa;
+    color: rgb(3, 3, 3);
+    border: none;
+    border-radius: 0 5px 5px 0;
+    width: 30px;
+    height: 50px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;   /* tamaño de la flecha */
+    font-weight: bold; /* grosor (normal, bold, 100-900) */
+">
+    &#128896;
+</button></i>
+</button>
+
+    <div id="panel-search-view">
+        <h4>Calcular Ruta</h4>
+        <div class="form-group">
+            <label for="route-start">Origen:</label>
+            <input type="text" id="route-start" placeholder="Escribe o haz clic derecho...">
         </div>
-        <div id="panel-reset-view" class="hidden">
-            <p>Ruta activa. Pulsa para empezar de nuevo.</p>
-            <button id="reset-route-btn">Nueva Búsqueda</button>
+        <div class="form-group">
+            <label for="route-end">Destino:</label>
+            <input type="text" id="route-end" disabled>
         </div>
+        <div class="form-group">
+            <label for="route-profile">Modo de Transporte:</label>
+            <select id="route-profile">
+                <option value="mapbox/driving-traffic">🚗 Coche (con tráfico)</option>
+                <option value="mapbox/driving">🚙 Coche</option>
+                <option value="mapbox/walking">🚶 A pie</option>
+                <option value="mapbox/cycling">🚴 Bici</option>
+            </select>
+        </div>
+        <button id="create-route-btn">Crear Ruta</button>
+        <button id="close-panel-btn">Cancelar</button>
     </div>
+
+    <div id="panel-reset-view" class="hidden">
+        <p>Ruta activa. Pulsa para empezar de nuevo.</p>
+        <button id="reset-route-btn">Nueva Búsqueda</button>
+    </div>
+</div>
+
     
     <div id="popup-slider">
       <div class="slider-header">
         <h4 id="resultados-titulo">Resultados</h4>
         <button id="slider-close-button"><i class="fas fa-times"></i></button>
       </div>
-      <hr style="margin: 0;">
+      <hr style="margin: 10;">
       <div id="popup-contenido"></div>
     </div>
 
@@ -140,7 +168,7 @@
     .popup-lugar:last-child { border-bottom: none; }
     .popup-lugar:hover { background-color: #f0f8ff; }
     .popup-lugar .valoracion-texto { color: #666; font-size: 0.9em; margin-top: 5px; display: block; }
-    #slider-open-button { position: absolute; top: 20px; left: 20px; z-index: 1001; padding: 10px 15px; background-color: #007bff; color: white; border: none; border-radius: 5px; box-shadow: 0 2px 10px rgba(0,0,0,0.3); cursor: pointer; font-size: 1em; transition: all 0.3s; }
+    #slider-open-button { position: absolute; bottom: 20px; left: 20px; z-index: 1001; padding: 10px 15px; background-color: #007bff; color: white; border: none; border-radius: 5px; box-shadow: 0 2px 10px rgba(0,0,0,0.3); cursor: pointer; font-size: 1em; transition: all 0.3s; }
     .map-icon { background: transparent; border: none; }
     .icon-background { display: flex; align-items: center; justify-content: center; width: 35px; height: 35px; border-radius: 50%; color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.4); border: 2px solid white; }
     .icon-background i { font-size: 1.3em; }
@@ -154,58 +182,67 @@
     #close-panel-btn { background-color: #6c757d; color: white; }
     #reset-route-btn { background-color: #dc3545; color: white; }
     #panel-reset-view p { text-align: center; color: #666; margin-top: 10px; }
+    #custom-route-panel {
+  position: absolute;
+  top: 80px;
+  left: 20px;
+  width: 300px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+  transition: transform 0.3s ease-in-out;
+  z-index: 999;
+  padding: 15px;
+  
+}
 
-    /* ===== AÑADIDO: Estilos para Móviles ===== */
+/* Estado colapsado */
+#custom-route-panel.collapsed {
+  transform: translateX(-320px);
+  
+}
+
+
     @media (max-width: 768px) {
-        /* Ajusta el contenedor de introducción */
-        #Contenedor1 {
-            padding: 10px;
-        }
-
-        /* Ajusta el contenedor del mapa para que ocupe más ancho */
-        #map-container {
-            width: 100%;
-            height: 75vh; /* Usa un porcentaje de la altura de la pantalla */
-            margin: 10px 0;
-            border-radius: 0;
-            border-left: none;
-            border-right: none;
-        }
-
-        /* Reposiciona el panel de filtros como una capa superior */
-        #panel-filtros {
-            width: calc(100% - 20px); /* Casi todo el ancho */
-            left: 10px; /* Centrado con un pequeño margen */
-            right: 10px;
-            top: 10px;
-            max-height: 80vh; /* Límite de altura para que se pueda hacer scroll dentro */
-        }
-
-        /* Ajusta el panel de rutas también */
-        #custom-route-panel {
-            width: calc(100% - 20px);
-            left: 10px;
-            right: 10px;
-            top: 10px;
-        }
-
-        /* Ajusta el panel lateral de resultados */
-        #popup-slider {
-            width: 90%;
-        }
+        #map-container { width: 100%; height: calc(100vh - 150px); margin: 0; border-radius: 0; }
+        #panel-filtros { width: auto; left: 10px; right: 10px; top: 10px; max-height: calc(85vh - 20px); }
+        #custom-route-panel, #popup-slider { width: calc(100% - 20px); left: 10px; max-width: 400px; }
+        .titulo h1 { font-size: 1.5rem; }
     }
   </style>
 
   <!-- SCRIPTS EXTERNOS -->
   <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
   <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lrm-mapbox@1.0.4/dist/lrm-mapbox.js"></script>
   <script src="https://unpkg.com/leaflet-pip@1.1.0/leaflet-pip.js"></script>
   <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
 
   <script>
+    const togglePanelBtn = document.getElementById("toggle-panel-btn");
+const routePanel = document.getElementById("custom-route-panel");
+
+togglePanelBtn.addEventListener("click", () => {
+  routePanel.classList.toggle("collapsed");
+
+  if (routePanel.classList.contains("collapsed")) {
+    togglePanelBtn.innerHTML = "&#128898;"; // flecha derecha
+  } else {
+    togglePanelBtn.innerHTML = "&#128896;"; // flecha izquierda
+  }
+});
+
+
+
+
     document.addEventListener('DOMContentLoaded', function () {
         
-        let mapa, markersLayerGroup, todosLosMarcadores = [], circuloBusqueda = null, poligonoMunicipio = null;
+        // --- VARIABLES GLOBALES ---
+        let mapa;
+        let markersLayerGroup;
+        let todosLosMarcadores = []; 
+        let circuloBusqueda = null;
+        let poligonoMunicipio = null;
         const RADIO_DE_BUSQUEDA = 1000;
         const municipiosComunidadDeMadrid = [ "Ajalvir", "Alameda del Valle", "Alcalá de Henares", "Alcobendas", "Alcorcón", "Aldea del Fresno", "Algete", "Alpedrete", "Ambite", "Anchuelo", "Aranjuez", "Arganda del Rey", "Arroyomolinos", "Batres", "Becerril de la Sierra", "Belmonte de Tajo", "Berzosa del Lozoya", "Boadilla del Monte", "Braojos de la Sierra", "Brea de Tajo", "Brunete", "Buitrago del Lozoya", "Bustarviejo", "Cabanillas de la Sierra", "Cadalso de los Vidrios", "Camarma de Esteruelas", "Campo Real", "Canencia", "Carabaña", "Casarrubuelos", "Cenicientos", "Cercedilla", "Cervera de Buitrago", "Chapinería", "Chinchón", "Ciempozuelos", "Cobeña", "Collado Mediano", "Collado Villalba", "Colmenar de Oreja", "Colmenar del Arroyo", "Colmenar Viejo", "Colmenarejo", "Corpa", "Coslada", "Cubas de la Sagra", "Daganzo de Arriba", "El Álamo", "El Atazar", "El Berrueco", "El Boalo", "El Escorial", "El Molar", "El Vellón", "Estremera", "Fresnedillas de la Oliva", "Fresno de Torote", "Fuenlabrada", "Fuente el Saz de Jarama", "Fuentidueña de Tajo", "Galapagar", "Garganta de los Montes", "Gargantilla del Lozoya y Pinilla de Buitrago", "Gascones", "Getafe", "Griñón", "Guadalix de la Sierra", "Guadarrama", "Horcajo de la Sierra-Aoslos", "Horcajuelo de la Sierra", "Hoyo de Manzanares", "Humanes de Madrid", "La Acebeda", "La Cabrera", "La Hiruela", "La Serna del Monte", "Las Rozas de Madrid", "Leganés", "Loeches", "Los Molinos", "Los Santos de la Humosa", "Lozoya", "Lozoyuela-Navas-Sieteiglesias", "Madarcos", "Madrid", "Majadahonda", "Manzanares el Real", "Meco", "Mejorada del Campo", "Miraflores de la Sierra", "Montejo de la Sierra", "Moraleja de Enmedio", "Moralzarzal", "Morata de Tajuña", "Móstoles", "Navacerrada", "Navalafuente", "Navalagamella", "Navalcarnero", "Navarredonda y San Mamés", "Navas del Rey", "Nuevo Bazán", "Olmeda de las Fuentes", "Orusco de Tajuña", "Paracuellos de Jarama", "Parla", "Patones", "Pedrezuela", "Pelayos de la Presa", "Perales de Tajuña", "Pezuela de las Torres", "Pinilla del Valle", "Pinto", "Piñuécar-Gandullas", "Pozuelo de Alarcón", "Pozuelo del Rey", "Prádena del Rincón", "Puebla de la Sierra", "Puentes Viejas", "Quijorna", "Rascafría", "Redueña", "Ribatejada", "Rivas-Vaciamrid", "Robledillo de la Jara", "Robledo de Chavela", "Robregordo", "Rozas de Puerto Real", "San Agustín del Guadalix", "San Fernando de Henares", "San Lorenzo de El Escorial", "San Martín de la Vega", "San Martín de Valdeiglesias", "San Sebastián de los Reyes", "Santa María de la Alameda", "Santorcaz", "Serranillos del Valle", "Sevilla la Nueva", "Somosierra", "Soto del Real", "Talamanca de Jarama", "Tielmes", "Titulcia", "Torrejón de Ardoz", "Torrejón de la Calzada", "Torrejón de Velasco", "Torrelaguna", "Torrelodones", "Torremocha de Jarama", "Torres de la Alameda", "Tres Cantos", "Valdaracete", "Valdeavero", "Valdelaguna", "Valdemanco", "Valdemaqueda", "Valdemorillo", "Valdemoro", "Valdeolmos-Alalpardo", "Valdepiélagos", "Valdetorres de Jarama", "Valdilecha", "Valverde de Alcalá", "Velilla de San Antonio", "Venturada", "Villa del Prado", "Villaconejos", "Villalbilla", "Villamanrique de Tajo", "Villamanta", "Villamantilla", "Villanueva de la Cañada", "Villanueva de Perales", "Villanueva del Pardillo", "Villar del Olmo", "Villarejo de Salvanés", "Villaviciosa de Odón", "Villavieja del Lozoya", "Zarzalejo" ].sort();
         const estadoFiltros = { centroGeografico: null, categorias: [], municipio: '', valoracion: 0 };
@@ -264,27 +301,19 @@
             });
         }
         
-        function showSearchView() {
-            searchView.classList.remove('hidden');
-            resetView.classList.add('hidden');
-            customRoutePanel.classList.remove('hidden');
-        }
-
-        function showResetView() {
-            searchView.classList.add('hidden');
-            resetView.classList.remove('hidden');
-            customRoutePanel.classList.remove('hidden');
-        }
+        function showSearchView() { searchView.classList.remove('hidden'); resetView.classList.add('hidden'); customRoutePanel.classList.remove('hidden'); }
+        function showResetView() { searchView.classList.add('hidden'); resetView.classList.remove('hidden'); customRoutePanel.classList.remove('hidden'); }
             
         function createRoute(originCoords, originName, destCoords, destName, profile) {
             if (controlDeRuta) mapa.removeControl(controlDeRuta);
             
+            const MAPBOX_ACCESS_TOKEN = 'pk.eyJ1IjoieWFpeGl0dGEiLCJhIjoiY2xhdXJweHY3MDAydTNwbWtpaXhlbml4dSJ9.HEh8CIzkT0i9bMJqGaf5sQ';
+
             controlDeRuta = L.Routing.control({
                 position: 'topright',
                 waypoints: [ L.Routing.waypoint(originCoords, originName), L.Routing.waypoint(destCoords, destName) ],
-                router: L.Routing.osrmv1({
-                    serviceUrl: `https://router.project-osrm.org/route/v1`,
-                    profile: profile, 
+                router: L.Routing.mapbox(MAPBOX_ACCESS_TOKEN, {
+                    profile: profile,
                     language: 'es'
                 }),
                 language: 'es',
@@ -298,12 +327,7 @@
             showResetView();
         }
 
-        function limpiarRutaActiva() {
-            if (controlDeRuta) {
-                mapa.removeControl(controlDeRuta);
-                controlDeRuta = null;
-            }
-        }
+        function limpiarRutaActiva() { if (controlDeRuta) { mapa.removeControl(controlDeRuta); controlDeRuta = null; } }
 
         function limpiarTodosLosFiltros() {
             limpiarRutaActiva();
@@ -331,12 +355,7 @@
             cerrarSlider();
         }
         
-        function crearContenidoPopup(marker) {
-            const precio = marker.precio === 0 ? 'Gratis' : `€${marker.precio.toFixed(2)}`;
-            const imagen = marker.image ? `<img src="${marker.image}" alt="${marker.title}" style="width:100%; height:auto; border-radius:4px; margin-bottom:10px;">` : '';
-            const valoracionTexto = marker.valoracionMedia > 0 ? `${marker.valoracionMedia.toFixed(1)}/5 ★` : 'Aún sin valorar';
-            return `<div style="width: 220px; text-align: center;">${imagen}<h5 style="margin: 5px 0;">${marker.title || marker.nombre}</h5><p style="margin: 5px 0; font-size: 0.9em;">${marker.info || ''}</p><p style="margin: 5px 0;"><strong>Precio:</strong> ${precio}</p><p style="margin: 5px 0;"><strong>Valoración:</strong> ${valoracionTexto}</p><a href="${marker.masInfo || '#'}" target="_blank" style="text-decoration: none; color: #007bff; font-weight: bold; display: block; margin-bottom: 10px;">Más Info</a><button class="btn btn-primary btn-sm route-button" data-marker-id="${marker._id}"><i class="fas fa-route"></i> Cómo llegar</button></div>`;
-        }
+        function crearContenidoPopup(marker) { const precio = marker.precio === 0 ? 'Gratis' : `€${marker.precio.toFixed(2)}`; const imagen = marker.image ? `<img src="${marker.image}" alt="${marker.title}" style="width:100%; height:auto; border-radius:4px; margin-bottom:10px;">` : ''; const valoracionTexto = marker.valoracionMedia > 0 ? `${marker.valoracionMedia.toFixed(1)}/5 ★` : 'Aún sin valorar'; return `<div style="width: 220px; text-align: center;">${imagen}<h5 style="margin: 5px 0;">${marker.title || marker.nombre}</h5><p style="margin: 5px 0; font-size: 0.9em;">${marker.info || ''}</p><p style="margin: 5px 0;"><strong>Precio:</strong> ${precio}</p><p style="margin: 5px 0;"><strong>Valoración:</strong> ${valoracionTexto}</p><a href="${marker.masInfo || '#'}" target="_blank" style="text-decoration: none; color: #007bff; font-weight: bold; display: block; margin-bottom: 10px;">Más Info</a><button class="btn btn-primary btn-sm route-button" data-marker-id="${marker._id}"><i class="fas fa-route"></i> Cómo llegar</button></div>`; }
 
         function configurarEventListenersDeRuta() {
             createRouteBtn.addEventListener("click", function () {
@@ -346,18 +365,14 @@
                 const destName = customRoutePanel.dataset.destName;
                 const destCoords = L.latLng(destLat, destLng);
                 const profile = routeProfileSelect.value;
-                
                 if (!originText) return alert("Por favor, introduce un punto de origen.");
-                
                 if (originText.startsWith("(") && originText.endsWith(")")) {
                     try {
                         const parts = originText.replace(/[()]/g, "").split(",");
                         const lat = parseFloat(parts[0]);
                         const lng = parseFloat(parts[1]);
                         createRoute(L.latLng(lat, lng), "Punto en el mapa", destCoords, destName, profile);
-                    } catch (e) {
-                        alert("Las coordenadas del mapa no son válidas.");
-                    }
+                    } catch (e) { alert("Las coordenadas del mapa no son válidas."); }
                 } else {
                     fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(originText + ", Madrid")}`)
                         .then(res => res.json())
@@ -374,31 +389,10 @@
                         });
                 }
             });
-
-            resetRouteBtn.addEventListener("click", function () {
-                limpiarRutaActiva();
-                showSearchView();
-            });
-
-            closePanelBtn.addEventListener("click", function () {
-                limpiarRutaActiva();
-                customRoutePanel.classList.add("hidden");
-            });
-
-            mapa.on("contextmenu", function (e) {
-                if (!customRoutePanel.classList.contains("hidden") && !searchView.classList.contains('hidden')) {
-                    routeStartInput.value = `(${e.latlng.lat.toFixed(5)}, ${e.latlng.lng.toFixed(5)})`;
-                }
-            });
-
-            routeProfileSelect.addEventListener("change", function () {
-                if (controlDeRuta) {
-                    const waypoints = controlDeRuta.getWaypoints();
-                    if (waypoints.length === 2 && waypoints[0].latLng && waypoints[1].latLng) {
-                        createRoute(waypoints[0].latLng, waypoints[0].name, waypoints[1].latLng, waypoints[1].name, routeProfileSelect.value);
-                    }
-                }
-            });
+            resetRouteBtn.addEventListener("click", function () { limpiarRutaActiva(); showSearchView(); });
+            closePanelBtn.addEventListener("click", function () { limpiarRutaActiva(); customRoutePanel.classList.add("hidden"); });
+            mapa.on("contextmenu", function (e) { if (!customRoutePanel.classList.contains("hidden") && !searchView.classList.contains('hidden')) { routeStartInput.value = `(${e.latlng.lat.toFixed(5)}, ${e.latlng.lng.toFixed(5)})`; } });
+            routeProfileSelect.addEventListener("change", function () { if (controlDeRuta) { const waypoints = controlDeRuta.getWaypoints(); if (waypoints.length === 2 && waypoints[0].latLng && waypoints[1].latLng) { createRoute(waypoints[0].latLng, waypoints[0].name, waypoints[1].latLng, waypoints[1].name, routeProfileSelect.value); } } });
         }
         
         async function cargarTodosLosMarcadores() { try { const e=await fetch("/json"); todosLosMarcadores=await e.json(),todosLosMarcadores.forEach(m=>{m.latlng&&"number"==typeof m.latlng.lat&&"number"==typeof m.latlng.lng&&(m.leaflet_latlng=L.latLng(m.latlng.lat,m.latlng.lng));let t=0,a=0;m.valoraciones&&m.valoraciones.length>0?(m.valoraciones.forEach(v=>t+=v.puntuacion),a=m.valoraciones.length,m.valoracionMedia=t/a):m.valoracionMedia=3+1.5*Math.random(),m.numeroVotos=a}) }catch(e){console.error("Error al cargar los marcadores:",e),todosLosMarcadores=[]} }
