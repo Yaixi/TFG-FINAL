@@ -28,9 +28,10 @@
         const markersData = <%- JSON.stringify(markers || []) %>;
         const map = L.map('map');
 
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(map);
+L.tileLayer('https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
+				maxZoom: 20,
+				subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+			}).addTo(map);
 
     if (markersData && markersData.length > 0) {
         const markerGroup = L.featureGroup();
@@ -54,4 +55,5 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 
 </body>
 </html>
+
 
