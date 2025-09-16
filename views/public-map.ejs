@@ -6,6 +6,115 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mapa de <%= ownerName %></title>
 
+    <!-- ESTILOS Y SCRIPTS DE LA PÁGINA PRINCIPAL -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <link rel='stylesheet' href='/stylesheets/style.css'/>
+    
+    <!-- SCRIPTS PARA GOOGLE MAPS -->
+    <script src="https://unpkg.com/leaflet.gridlayer.googlemutant@latest/dist/Leaflet.GoogleMutant.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=TU_API_KEY_AQUI"></script>
+    
+</head>
+
+<body>
+    
+  <!-- Se usa la misma estructura de cabecera y título que en index.ejs -->
+  <div class="titulo">
+    <a href="/" id="h1" class="fa fa-map-location navbar-brand"> M€B</a>
+    <a href="/" style="text-decoration: none; color: inherit;">
+        <h1>MADRID DE BOLSILLO</h1>
+    </a>
+    <a href="/" id="h1" class="fa fa-map-location navbar-brand"> M€B</a>
+  </div>
+
+  <div id="Contenedor1">
+    <div style="text-align: center;">
+      <!-- Título personalizado para la vista compartida -->
+      <h3 style="color: #ffeba7;"><strong>Mapa compartido por <%= ownerName %></strong></h3>
+      <p>Explora los planes y lugares favoritos guardados por <%= ownerName %>.</p>
+    </div>
+  </div>
+  
+  <div id="map-container">
+      <div id="mapid"></div>
+  </div>
+
+  <style>
+    /* Estilos copiados de index.ejs para consistencia */
+    .oculto { display: none !important; }
+    #map-container { position: relative; margin: 20px auto; width: 80%; height: 700px; border-radius: 10px; overflow: hidden; border: 1px solid #ccc;}
+    #mapid { height: 100%; width: 100%; }
+    .map-icon { background: transparent; border: none; }
+    .icon-background { display: flex; align-items: center; justify-content: center; width: 35px; height: 35px; border-radius: 50%; color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.4); border: 2px solid white; }
+    .icon-background i { font-size: 1.3em; }
+    
+    @media (max-width: 768px) {
+        #map-container { width: 100%; height: calc(100vh - 150px); margin: 0; border-radius: 0; }
+        .titulo h1 { font-size: 1.5rem; }
+    }
+  </style>
+
+  <!-- SCRIPTS DE LEAFLET -->
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        
+        // --- VARIABLES GLOBALES ---
+        const markersData = <%- JSON.stringify(markers || []) %>;
+        let mapa;
+        let markersLayerGroup;
+        const iconMapping = { 'Restauración': { icon: 'fas fa-utensils', color: '#ef476f' }, 'Viajes': { icon: 'fas fa-plane', color: '#118ab2' }, 'Naturaleza': { icon: 'fas fa-tree', color: '#43aa8b' }, 'Deportes': { icon: 'fas fa-futbol', color: '#f9844a' }, 'Ocio': { icon: 'fas fa-gamepad', color: '#8338ec' }, 'Gratis': { icon: 'fas fa-euro-sign', color: '#ffd60a' }, 'sin asignar': { icon: 'fas fa-map-marker-alt', color: '#577590' }};
+
+        function inicializarMapa() {
+            mapa = L.map('mapid');
+            markersLayerGroup = L.layerGroup().addTo(mapa);
+
+            // Usamos el mapa de Google Maps
+            L.gridLayer.googleMutant({
+                type: 'roadmap' // o 'satellite', 'hybrid', 'terrain'
+            }).addTo(mapa);
+        }
+
+        function crearIconoPersonalizado(marker) {
+            const categoria = marker.plan === "gratis" ? "Gratis" : marker.category || "sin asignar";
+            const { icon, color } = iconMapping[categoria] || iconMapping["sin asignar"];
+            const html = `<div class="icon-background" style="background-color: ${color};"><i class="${icon}"></i></div>`;
+            return L.divIcon({ html: html, className: "map-icon", iconSize: [35, 35], iconAnchor: [18, 35] });
+        }
+
+        function mostrarMarcadoresCompartidos() {
+            if (markersData && markersData.length > 0) {
+                markersData.forEach(marker => {
+                    if (marker && marker.latlng && typeof marker.latlng.lat === 'number' && typeof marker.latlng.lng === 'number') {
+                        const coords = [marker.latlng.lat, marker.latlng.lng];
+                        const popupContent = `<b>${marker.title || 'Sin título'}</b><br>${marker.info || 'Sin descripción.'}`;
+                        const icono = crearIconoPersonalizado(marker);
+                        L.marker(coords, { icon: icono }).bindPopup(popupContent).addTo(markersLayerGroup);
+                    }
+                });
+                mapa.fitBounds(markersLayerGroup.getBounds(), { padding: [50, 50] });
+            } else {
+                mapa.setView([40.4167, -3.703], 13); // Centramos en Madrid si no hay marcadores
+                console.log('Este usuario no tiene marcadores para mostrar.');
+            }
+        }
+
+        inicializarMapa();
+        mostrarMarcadoresCompartidos();
+    });
+  </script>
+
+</body>
+</html><!-- En views/public-map.ejs -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mapa de <%= ownerName %></title>
+
     <!-- ENLAZAMOS LOS MISMOS ESTILOS QUE EN INDEX.EJS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
@@ -111,3 +220,4 @@
   </script>
 </body>
 </html>
+
