@@ -1,20 +1,26 @@
-<!-- En views/public-map.ejs -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+code Code
+IGNORE_WHEN_COPYING_START
+IGNORE_WHEN_COPYING_END
+
     
-    <title>Mapa de <%= ownerName %></title>
-    
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    
-    <style>
-        body { padding: 0; margin: 0; font-family: sans-serif; }
-        html, body, #map { height: 100%; width: 100%; }
-        .map-title { position: fixed; top: 10px; left: 50px; z-index: 1000; background: rgba(255, 255, 255, 0.9); padding: 5px 15px; border-radius: 5px; border: 1px solid #ccc; box-shadow: 0 1px 5px rgba(0,0,0,0.4); }
-    </style>
+<title>Mapa de <%= ownerName %></title>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<style>
+    body { padding: 0; margin: 0; font-family: sans-serif; }
+    html, body, #map { height: 100%; width: 100%; }
+    .map-title { position: fixed; top: 10px; left: 50px; z-index: 1000; background: rgba(255, 255, 255, 0.9); padding: 5px 15px; border-radius: 5px; border: 1px solid #ccc; box-shadow: 0 1px 5px rgba(0,0,0,0.4); }
+</style>
+
+  
+
 </head>
 <body>
     <div id="map"></div>
@@ -25,27 +31,34 @@
       document.addEventListener('DOMContentLoaded', function () {
         const markersData = <%- JSON.stringify(markers || []) %>;
         const map = L.map('map');
+code Code
+IGNORE_WHEN_COPYING_START
+IGNORE_WHEN_COPYING_END
 
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        }).addTo(map);
+    
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
 
-        if (markersData && markersData.length > 0) {
-            const markerGroup = L.featureGroup();
-            markersData.forEach(marker => {
-                if (marker && marker.latlng && typeof marker.latlng.lat === 'number' && typeof marker.latlng.lng === 'number') {
-                    const coords = [marker.latlng.lat, marker.latlng.lng];
-                    const popupContent = `<b>${marker.title || 'Sin título'}</b><br>${marker.info || 'Sin descripción.'}`;
-                    L.marker(coords).bindPopup(popupContent).addTo(markerGroup);
-                }
-            });
-            markerGroup.addTo(map);
-            map.fitBounds(markerGroup.getBounds(), { padding: [50, 50] });
-        } else {
-            map.setView([40.4167, -3.703], 13);
-            console.log('Este usuario no tiene marcadores para mostrar.');
-        }
-      });
-    </script>
+    if (markersData && markersData.length > 0) {
+        const markerGroup = L.featureGroup();
+        markersData.forEach(marker => {
+            if (marker && marker.latlng && typeof marker.latlng.lat === 'number' && typeof marker.latlng.lng === 'number') {
+                const coords = [marker.latlng.lat, marker.latlng.lng];
+                const popupContent = `<b>${marker.title || 'Sin título'}</b><br>${marker.info || 'Sin descripción.'}`;
+                L.marker(coords).bindPopup(popupContent).addTo(markerGroup);
+            }
+        });
+        markerGroup.addTo(map);
+        map.fitBounds(markerGroup.getBounds(), { padding: [50, 50] });
+    } else {
+        map.setView([40.4167, -3.703], 13);
+        console.log('Este usuario no tiene marcadores para mostrar.');
+    }
+  });
+</script>
+
+  
+
 </body>
 </html>
