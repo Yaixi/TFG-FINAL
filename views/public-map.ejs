@@ -4,110 +4,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
     <title>Mapa de <%= ownerName %></title>
-
-    <!-- ENLAZAMOS LOS MISMOS ESTILOS QUE EN INDEX.EJS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
-    <link rel='stylesheet' href='/stylesheets/style.css'/>
     
-    <!-- SCRIPTS PARA GOOGLE MAPS -->
-    <script src="https://unpkg.com/leaflet.gridlayer.googlemutant@latest/dist/Leaflet.GoogleMutant.js"></script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=TU_API_KEY_AQUI"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     
-    <% include header %>
+    <style>
+        body { padding: 0; margin: 0; font-family: sans-serif; }
+        html, body, #map { height: 100%; width: 100%; }
+        .map-title { position: fixed; top: 10px; left: 50px; z-index: 1000; background: rgba(255, 255, 255, 0.9); padding: 5px 15px; border-radius: 5px; border: 1px solid #ccc; box-shadow: 0 1px 5px rgba(0,0,0,0.4); }
+    </style>
 </head>
-
 <body>
-    
-  <!-- USAMOS LA MISMA ESTRUCTURA HTML QUE EN INDEX.EJS -->
-  <div class="titulo">
-    <a href="/" id="h1" class="fa fa-map-location navbar-brand"> M€B</a>
-    <a href="/" style="text-decoration: none; color: inherit;">
-        <h1>MADRID DE BOLSILLO</h1>
-    </a>
-    <a href="/" id="h1" class="fa fa-map-location navbar-brand"> M€B</a>
-  </div>
-
-  <div id="Contenedor1">
-    <div style="text-align: center;">
-      <!-- Título personalizado para la vista compartida -->
-      <h3 style="color: #ffeba7;"><strong>Mapa compartido por <%= ownerName %></strong></h3>
-      <p>Explora los planes y lugares favoritos guardados por <%= ownerName %>.</p>
+    <div id="map"></div>
+    <div class="map-title">
+        <h2 style="text-align:center;">Mapa compartido por <%= ownerName %></h2>
     </div>
-  </div>
-  
-  <div id="map-container">
-      <div id="mapid"></div>
-  </div>
-
-  <!-- SCRIPTS DE LEAFLET -->
-  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
         const markersData = <%- JSON.stringify(markers || []) %>;
-        let mapa;
-        let markersLayerGroup;
-        const iconMapping = { 'Restauración': { icon: 'fas fa-utensils', color: '#ef476f' }, 'Viajes': { icon: 'fas fa-plane', color: '#118ab2' }, 'Naturaleza': { icon: 'fas fa-tree', color: '#43aa8b' }, 'Deportes': { icon: 'fas fa-futbol', color: '#f9844a' }, 'Ocio': { icon: 'fas fa-gamepad', color: '#8338ec' }, 'Gratis': { icon: 'fas fa-euro-sign', color: '#ffd60a' }, 'sin asignar': { icon: 'fas fa-map-marker-alt', color: '#577590' }};
+        const map = L.map('map');
 
-        function inicializarMapa() {
-            mapa = L.map('mapid');
-            markersLayerGroup = L.layerGroup().addTo(mapa);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
 
-            // Usamos el mapa de Google Maps con un estilo oscuro para que encaje
-            L.gridLayer.googleMutant({
-                type: 'roadmap',
-                styles: [
-                    { elementType: 'geometry', stylers: [{ color: '#242f3e' }] },
-                    { elementType: 'labels.text.stroke', stylers: [{ color: '#242f3e' }] },
-                    { elementType: 'labels.text.fill', stylers: [{ color: '#746855' }] },
-                    { featureType: 'administrative.locality', elementType: 'labels.text.fill', stylers: [{ color: '#d59563' }] },
-                    { featureType: 'poi', elementType: 'labels.text.fill', stylers: [{ color: '#d59563' }] },
-                    { featureType: 'poi.park', elementType: 'geometry', stylers: [{ color: '#263c3f' }] },
-                    { featureType: 'poi.park', elementType: 'labels.text.fill', stylers: [{ color: '#6b9a76' }] },
-                    { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#38414e' }] },
-                    { featureType: 'road', elementType: 'geometry.stroke', stylers: [{ color: '#212a37' }] },
-                    { featureType: 'road', elementType: 'labels.text.fill', stylers: [{ color: '#9ca5b3' }] },
-                    { featureType: 'road.highway', elementType: 'geometry', stylers: [{ color: '#746855' }] },
-                    { featureType: 'road.highway', elementType: 'geometry.stroke', stylers: [{ color: '#1f2835' }] },
-                    { featureType: 'road.highway', elementType: 'labels.text.fill', stylers: [{ color: '#f3d19c' }] },
-                    { featureType: 'transit', elementType: 'geometry', stylers: [{ color: '#2f3948' }] },
-                    { featureType: 'transit.station', elementType: 'labels.text.fill', stylers: [{ color: '#d59563' }] },
-                    { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#17263c' }] },
-                    { featureType: 'water', elementType: 'labels.text.fill', stylers: [{ color: '#515c6d' }] },
-                    { featureType: 'water', elementType: 'labels.text.stroke', stylers: [{ color: '#17263c' }] }
-                ]
-            }).addTo(mapa);
+        if (markersData && markersData.length > 0) {
+            const markerGroup = L.featureGroup();
+            markersData.forEach(marker => {
+                if (marker && marker.latlng && typeof marker.latlng.lat === 'number' && typeof marker.latlng.lng === 'number') {
+                    const coords = [marker.latlng.lat, marker.latlng.lng];
+                    const popupContent = `<b>${marker.title || 'Sin título'}</b><br>${marker.info || 'Sin descripción.'}`;
+                    L.marker(coords).bindPopup(popupContent).addTo(markerGroup);
+                }
+            });
+            markerGroup.addTo(map);
+            map.fitBounds(markerGroup.getBounds(), { padding: [50, 50] });
+        } else {
+            map.setView([40.4167, -3.703], 13);
+            console.log('Este usuario no tiene marcadores para mostrar.');
         }
-
-        function crearIconoPersonalizado(marker) {
-            const categoria = marker.plan === "gratis" ? "Gratis" : marker.category || "sin asignar";
-            const { icon, color } = iconMapping[categoria] || iconMapping["sin asignar"];
-            const html = `<div class="icon-background" style="background-color: ${color};"><i class="${icon}"></i></div>`;
-            return L.divIcon({ html: html, className: "map-icon", iconSize: [35, 35], iconAnchor: [18, 35] });
-        }
-
-        function mostrarMarcadoresCompartidos() {
-            if (markersData && markersData.length > 0) {
-                markersData.forEach(marker => {
-                    if (marker && marker.latlng && typeof marker.latlng.lat === 'number' && typeof marker.latlng.lng === 'number') {
-                        const coords = [marker.latlng.lat, marker.latlng.lng];
-                        const popupContent = `<b>${marker.title || 'Sin título'}</b><br>${marker.info || 'Sin descripción.'}`;
-                        const icono = crearIconoPersonalizado(marker);
-                        L.marker(coords, { icon: icono }).bindPopup(popupContent).addTo(markersLayerGroup);
-                    }
-                });
-                mapa.fitBounds(markersLayerGroup.getBounds(), { padding: [50, 50] });
-            } else {
-                mapa.setView([40.4167, -3.703], 13);
-                console.log('Este usuario no tiene marcadores para mostrar.');
-            }
-        }
-
-        inicializarMapa();
-        mostrarMarcadoresCompartidos();
-    });
-  </script>
+      });
+    </script>
 </body>
 </html>
