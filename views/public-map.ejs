@@ -1,127 +1,54 @@
-<!-- En views/public-map.ejs -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mapa de <%= ownerName %></title>
 
-    <!-- ESTILOS Y SCRIPTS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
-    <link rel='stylesheet' href='/stylesheets/style.css'/>
-    
-    <!-- SCRIPTS PARA GOOGLE MAPS -->
-    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-    <script src="https://unpkg.com/leaflet.gridlayer.googlemutant@latest/dist/Leaflet.GoogleMutant.js"></script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=TU_API_KEY_AQUI"></script>
-</head>
+<title>Mapa de <%= ownerName %></title>
 
-<body>
-    
-  <div class="titulo">
-    <a href="/" id="h1" class="fa fa-map-location navbar-brand"> M€B</a>
-    <a href="/" style="text-decoration: none; color: inherit;"><h1>MADRID DE BOLSILLO</h1></a>
-    <a href="/" id="h1" class="fa fa-map-location navbar-brand"> M€B</a>
-  </div>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-  <div id="Contenedor1">
-    <div style="text-align: center;">
-      <h3 style="color: #ffeba7;"><strong>Mapa compartido por <%= ownerName %></strong></h3>
-      <p>Explora los planes y lugares favoritos guardados por <%= ownerName %>.</p>
-    </div>
-  </div>
+<style>
+    body { padding: 0; margin: 0; font-family: sans-serif; }
+    html, body, #map { height: 100%; width: 100%; }
+    .map-title { position: fixed; top: 10px; left: 50px; z-index: 1000; background: rgba(255, 255, 255, 0.9); padding: 5px 15px; border-radius: 5px; border: 1px solid #ccc; box-shadow: 0 1px 5px rgba(0,0,0,0.4); }
+</style>
+
   
-  <div id="map-container">
-      <div id="mapid"></div>
-  </div>
 
-  <style>
-    /* ... (Tu CSS va aquí, lo he omitido por brevedad pero debe estar) ... */
-    #map-container { position: relative; margin: 20px auto; width: 80%; height: 700px; border-radius: 10px; overflow: hidden; border: 1px solid #ccc;}
-    #mapid { height: 100%; width: 100%; }
-    .map-icon { background: transparent; border: none; }
-    .icon-background { display: flex; align-items: center; justify-content: center; width: 35px; height: 35px; border-radius: 50%; color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.4); border: 2px solid white; }
-    .icon-background i { font-size: 1.3em; }
-  </style>
-
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        
+</head>
+<body>
+    <div id="map"></div>
+    <div class="map-title">
+        <h2 style="text-align:center;">Mapa compartido por <%= ownerName %></h2>
+    </div>
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
         const markersData = <%- JSON.stringify(markers || []) %>;
-        const map = L.map('map'); // El nombre de la variable es 'map'
-        const iconMapping = { 'Restauración': { icon: 'fas fa-utensils', color: '#ef476f' }, 'Viajes': { icon: 'fas fa-plane', color: '#118ab2' }, 'Naturaleza': { icon: 'fas fa-tree', color: '#43aa8b' }, 'Deportes': { icon: 'fas fa-futbol', color: '#f9844a' }, 'Ocio': { icon: 'fas fa-gamepad', color: '#8338ec' }, 'Gratis': { icon: 'fas fa-euro-sign', color: '#ffd60a' }, 'sin asignar': { icon: 'fas fa-map-marker-alt', color: '#577590' }};
+        const map = L.map('map');
 
-        // --- DEFINICIÓN DE LOS MAPAS BASE ---
-        const baseMaps = {
-            "OpenStreetMap": L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '© OpenStreetMap contributors'
-            }),
-            // MÉTODO CORRECTO PARA GOOGLE MAPS
-            "Google Maps": L.gridLayer.googleMutant({
-                type: 'roadmap' // o 'satellite', 'hybrid', 'terrain'
-            }),
-            "Google Maps Satélite": L.gridLayer.googleMutant({
-                type: 'satellite'
-            }),
-            "CartoDB Voyager": L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png', {
-                attribution: '&copy; <a href="https://carto.com/attributions">CARTO</a>'
-            }),
-            "CartoDB Dark": L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png', {
-                attribution: '&copy; <a href="https://carto.com/attributions">CARTO</a>'
-            }),
-            // ¡RECUERDA PONER TU TOKEN DE MAPBOX SI QUIERES USAR ESTOS!
-            "Mapbox": L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
-                attribution: '© Mapbox',
-                id: 'mapbox/streets-v11',
-                accessToken: 'your.mapbox.access.token' 
-            }),
-            "Mapbox Satélite": L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
-                attribution: '© Mapbox',
-                id: 'mapbox/satellite-v9',
-                accessToken: 'your.mapbox.access.token'
-            })
-        };
+L.tileLayer('https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
+				maxZoom: 20,
+				subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+			}).addTo(map);
 
-        // --- LÓGICA PARA AÑADIR EL CONTROL Y EL MAPA POR DEFECTO ---
-        L.control.layers(baseMaps).addTo(map);
-
-        const selectedBaseMap = localStorage.getItem('selectedBaseMap');
-        if (selectedBaseMap && baseMaps[selectedBaseMap]) {
-            baseMaps[selectedBaseMap].addTo(map);
-        } else {
-            baseMaps["Google Maps"].addTo(map); // Google Maps como mapa por defecto
-        }
-
-        map.on('baselayerchange', function (event) {
-            localStorage.setItem('selectedBaseMap', event.name);
+    if (markersData && markersData.length > 0) {
+        const markerGroup = L.featureGroup();
+        markersData.forEach(marker => {
+            if (marker && marker.latlng && typeof marker.latlng.lat === 'number' && typeof marker.latlng.lng === 'number') {
+                const coords = [marker.latlng.lat, marker.latlng.lng];
+                const popupContent = `<b>${marker.title || 'Sin título'}</b><br>${marker.info || 'Sin descripción.'}`;
+                L.marker(coords).bindPopup(popupContent).addTo(markerGroup);
+            }
         });
-
-        // --- LÓGICA PARA MOSTRAR LOS MARCADORES (se mantiene igual) ---
-        const markersLayerGroup = L.layerGroup().addTo(map);
-
-        function crearIconoPersonalizado(marker) {
-            const categoria = marker.plan === "gratis" ? "Gratis" : marker.category || "sin asignar";
-            const { icon, color } = iconMapping[categoria] || iconMapping["sin asignar"];
-            const html = `<div class="icon-background" style="background-color: ${color};"><i class="${icon}"></i></div>`;
-            return L.divIcon({ html: html, className: "map-icon", iconSize: [35, 35], iconAnchor: [18, 35] });
-        }
-
-        if (markersData && markersData.length > 0) {
-            markersData.forEach(marker => {
-                if (marker && marker.latlng && typeof marker.latlng.lat === 'number' && typeof marker.latlng.lng === 'number') {
-                    const coords = [marker.latlng.lat, marker.latlng.lng];
-                    const popupContent = `<b>${marker.title || 'Sin título'}</b><br>${marker.info || 'Sin descripción.'}`;
-                    const icono = crearIconoPersonalizado(marker);
-                    L.marker(coords, { icon: icono }).bindPopup(popupContent).addTo(markersLayerGroup);
-                }
-            });
-            map.fitBounds(markersLayerGroup.getBounds(), { padding: [50, 50] });
-        } else {
-            map.setView([40.4167, -3.703], 13);
-            console.log('Este usuario no tiene marcadores para mostrar.');
-        }
-    });
-  </script>
+        markerGroup.addTo(map);
+        map.fitBounds(markerGroup.getBounds(), { padding: [50, 50] });
+    } else {
+        map.setView([40.4167, -3.703], 13);
+        console.log('Este usuario no tiene marcadores para mostrar.');
+    }
+  });
+</script>
 </body>
 </html>
