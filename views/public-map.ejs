@@ -37,49 +37,56 @@
   </div>
 
   <style>
-    /* ... (Tu CSS va aquí, lo he omitido por brevedad pero debe estar) ... */
+    /* Estilos para consistencia visual */
     #map-container { position: relative; margin: 20px auto; width: 80%; height: 700px; border-radius: 10px; overflow: hidden; border: 1px solid #ccc;}
     #mapid { height: 100%; width: 100%; }
     .map-icon { background: transparent; border: none; }
     .icon-background { display: flex; align-items: center; justify-content: center; width: 35px; height: 35px; border-radius: 50%; color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.4); border: 2px solid white; }
     .icon-background i { font-size: 1.3em; }
+
+    /* --- ESTILOS PARA HACER VISIBLE EL CONTROL DE CAPAS --- */
+    .leaflet-control-layers {
+        background: rgba(255, 255, 255, 0.9) !important;
+        border-radius: 5px;
+        box-shadow: 0 1px 5px rgba(0,0,0,0.4);
+        border: 1px solid #ccc;
+    }
+    .leaflet-control-layers-base label {
+        color: #333 !important; /* Texto oscuro para que sea legible */
+        font-weight: bold;
+    }
+    .leaflet-control-layers-selector {
+        margin-right: 8px;
+    }
+    /* --- FIN DE LOS ESTILOS DEL CONTROL --- */
+    
+    @media (max-width: 768px) {
+        #map-container { width: 100%; height: calc(100vh - 150px); margin: 0; border-radius: 0; }
+        .titulo h1 { font-size: 1.5rem; }
+    }
   </style>
 
   <script>
     document.addEventListener('DOMContentLoaded', function () {
         
         const markersData = <%- JSON.stringify(markers || []) %>;
-        const map = L.map('map'); // El nombre de la variable es 'map'
+        const map = L.map('map');
         const iconMapping = { 'Restauración': { icon: 'fas fa-utensils', color: '#ef476f' }, 'Viajes': { icon: 'fas fa-plane', color: '#118ab2' }, 'Naturaleza': { icon: 'fas fa-tree', color: '#43aa8b' }, 'Deportes': { icon: 'fas fa-futbol', color: '#f9844a' }, 'Ocio': { icon: 'fas fa-gamepad', color: '#8338ec' }, 'Gratis': { icon: 'fas fa-euro-sign', color: '#ffd60a' }, 'sin asignar': { icon: 'fas fa-map-marker-alt', color: '#577590' }};
 
         // --- DEFINICIÓN DE LOS MAPAS BASE ---
         const baseMaps = {
+            "Google Maps": L.gridLayer.googleMutant({ type: 'roadmap' }),
+            "Google Maps Satélite": L.gridLayer.googleMutant({ type: 'satellite' }),
             "OpenStreetMap": L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '© OpenStreetMap contributors'
             }),
-            // MÉTODO CORRECTO PARA GOOGLE MAPS
-            "Google Maps": L.gridLayer.googleMutant({
-                type: 'roadmap' // o 'satellite', 'hybrid', 'terrain'
+            "CartoDB Oscuro": L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png', {
+                attribution: '&copy; CARTO'
             }),
-            "Google Maps Satélite": L.gridLayer.googleMutant({
-                type: 'satellite'
-            }),
-            "CartoDB Voyager": L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png', {
-                attribution: '&copy; <a href="https://carto.com/attributions">CARTO</a>'
-            }),
-            "CartoDB Dark": L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png', {
-                attribution: '&copy; <a href="https://carto.com/attributions">CARTO</a>'
-            }),
-            // ¡RECUERDA PONER TU TOKEN DE MAPBOX SI QUIERES USAR ESTOS!
             "Mapbox": L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
                 attribution: '© Mapbox',
                 id: 'mapbox/streets-v11',
-                accessToken: 'your.mapbox.access.token' 
-            }),
-            "Mapbox Satélite": L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
-                attribution: '© Mapbox',
-                id: 'mapbox/satellite-v9',
-                accessToken: 'your.mapbox.access.token'
+                accessToken: 'TU_ACCESS_TOKEN_DE_MAPBOX_AQUI' // Reemplazar si se quiere usar
             })
         };
 
@@ -97,7 +104,7 @@
             localStorage.setItem('selectedBaseMap', event.name);
         });
 
-        // --- LÓGICA PARA MOSTRAR LOS MARCADORES (se mantiene igual) ---
+        // --- LÓGICA PARA MOSTRAR LOS MARCADORES ---
         const markersLayerGroup = L.layerGroup().addTo(map);
 
         function crearIconoPersonalizado(marker) {
