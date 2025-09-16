@@ -6,20 +6,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mapa de <%= ownerName %></title>
 
-    <!-- ESTILOS Y SCRIPTS DE LA PÁGINA PRINCIPAL -->
+    <!-- ENLAZAMOS LOS MISMOS ESTILOS QUE EN INDEX.EJS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
     <link rel='stylesheet' href='/stylesheets/style.css'/>
     
-      <link href="http://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
     <!-- SCRIPTS PARA GOOGLE MAPS -->
     <script src="https://unpkg.com/leaflet.gridlayer.googlemutant@latest/dist/Leaflet.GoogleMutant.js"></script>
     <script src="https://maps.googleapis.com/maps/api/js?key=TU_API_KEY_AQUI"></script>
+    
+    <% include header %>
 </head>
 
 <body>
     
-  <!-- Se usa la misma estructura de cabecera y título que en index.ejs -->
+  <!-- USAMOS LA MISMA ESTRUCTURA HTML QUE EN INDEX.EJS -->
   <div class="titulo">
     <a href="/" id="h1" class="fa fa-map-location navbar-brand"> M€B</a>
     <a href="/" style="text-decoration: none; color: inherit;">
@@ -40,28 +41,11 @@
       <div id="mapid"></div>
   </div>
 
-  <style>
-    /* Estilos copiados de index.ejs para consistencia */
-    .oculto { display: none !important; }
-    #map-container { position: relative; margin: 20px auto; width: 80%; height: 700px; border-radius: 10px; overflow: hidden; border: 1px solid #ccc;}
-    #mapid { height: 100%; width: 100%; }
-    .map-icon { background: transparent; border: none; }
-    .icon-background { display: flex; align-items: center; justify-content: center; width: 35px; height: 35px; border-radius: 50%; color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.4); border: 2px solid white; }
-    .icon-background i { font-size: 1.3em; }
-    
-    @media (max-width: 768px) {
-        #map-container { width: 100%; height: calc(100vh - 150px); margin: 0; border-radius: 0; }
-        .titulo h1 { font-size: 1.5rem; }
-    }
-  </style>
-
   <!-- SCRIPTS DE LEAFLET -->
   <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
 
   <script>
     document.addEventListener('DOMContentLoaded', function () {
-        
-        // --- VARIABLES GLOBALES ---
         const markersData = <%- JSON.stringify(markers || []) %>;
         let mapa;
         let markersLayerGroup;
@@ -71,9 +55,29 @@
             mapa = L.map('mapid');
             markersLayerGroup = L.layerGroup().addTo(mapa);
 
-            // Usamos el mapa de Google Maps
+            // Usamos el mapa de Google Maps con un estilo oscuro para que encaje
             L.gridLayer.googleMutant({
-                type: 'roadmap' // o 'satellite', 'hybrid', 'terrain'
+                type: 'roadmap',
+                styles: [
+                    { elementType: 'geometry', stylers: [{ color: '#242f3e' }] },
+                    { elementType: 'labels.text.stroke', stylers: [{ color: '#242f3e' }] },
+                    { elementType: 'labels.text.fill', stylers: [{ color: '#746855' }] },
+                    { featureType: 'administrative.locality', elementType: 'labels.text.fill', stylers: [{ color: '#d59563' }] },
+                    { featureType: 'poi', elementType: 'labels.text.fill', stylers: [{ color: '#d59563' }] },
+                    { featureType: 'poi.park', elementType: 'geometry', stylers: [{ color: '#263c3f' }] },
+                    { featureType: 'poi.park', elementType: 'labels.text.fill', stylers: [{ color: '#6b9a76' }] },
+                    { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#38414e' }] },
+                    { featureType: 'road', elementType: 'geometry.stroke', stylers: [{ color: '#212a37' }] },
+                    { featureType: 'road', elementType: 'labels.text.fill', stylers: [{ color: '#9ca5b3' }] },
+                    { featureType: 'road.highway', elementType: 'geometry', stylers: [{ color: '#746855' }] },
+                    { featureType: 'road.highway', elementType: 'geometry.stroke', stylers: [{ color: '#1f2835' }] },
+                    { featureType: 'road.highway', elementType: 'labels.text.fill', stylers: [{ color: '#f3d19c' }] },
+                    { featureType: 'transit', elementType: 'geometry', stylers: [{ color: '#2f3948' }] },
+                    { featureType: 'transit.station', elementType: 'labels.text.fill', stylers: [{ color: '#d59563' }] },
+                    { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#17263c' }] },
+                    { featureType: 'water', elementType: 'labels.text.fill', stylers: [{ color: '#515c6d' }] },
+                    { featureType: 'water', elementType: 'labels.text.stroke', stylers: [{ color: '#17263c' }] }
+                ]
             }).addTo(mapa);
         }
 
@@ -96,7 +100,7 @@
                 });
                 mapa.fitBounds(markersLayerGroup.getBounds(), { padding: [50, 50] });
             } else {
-                mapa.setView([40.4167, -3.703], 13); // Centramos en Madrid si no hay marcadores
+                mapa.setView([40.4167, -3.703], 13);
                 console.log('Este usuario no tiene marcadores para mostrar.');
             }
         }
@@ -105,8 +109,5 @@
         mostrarMarcadoresCompartidos();
     });
   </script>
-
 </body>
 </html>
-
-
